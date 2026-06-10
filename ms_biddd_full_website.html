@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #080e12;
+    --bg2: #0d1a20;
+    --bg3: #111f28;
+    --green: #00e676;
+    --green-dim: #00c15a;
+    --green-dark: #003d1a;
+    --blue: #1a6fdf;
+    --blue-bright: #2d8fff;
+    --text: #e8f0f5;
+    --muted: #5a7a8a;
+    --border: #1a3040;
+    --card: #0d1c24;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    border: 1px solid var(--green);
+    position: sticky;
+    top: 0;
+    background: rgba(8,14,18,0.95);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: var(--mono);
+    color: var(--green);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links li {
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: color 0.2s;
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
+  }
+
+  .nav-links li:hover, .nav-links li.active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+  }
+
+  /* PAGES */
+  .page { display: none; position: relative; z-index: 1; }
+  .page.active { display: block; }
+
+  /* ============ HOME ============ */
+  .hero {
+    min-height: calc(100vh - 57px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 60px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glow-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.25;
+    pointer-events: none;
+  }
+
+  .glow-green { background: var(--green); width: 300px; height: 300px; bottom: 10%; left: 20%; }
+  .glow-blue { background: var(--blue); width: 200px; height: 200px; top: 20%; left: -5%; }
+  .glow-green2 { background: var(--green); width: 150px; height: 150px; top: 15%; right: 10%; }
+
+  .hero-left h1 {
+    font-family: var(--mono);
+    font-size: clamp(24px, 3vw, 40px);
+    font-weight: 400;
+    line-height: 1.4;
+    margin-bottom: 16px;
+  }
+
+  .hero-tag {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .hero-tag .item-name {
+    font-family: var(--mono);
+    font-size: clamp(28px, 4vw, 52px);
+    color: var(--blue-bright);
+    font-weight: 400;
+  }
+
+  .live-badge {
+    background: var(--green-dim);
+    color: #000;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .hero-btns {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .btn-primary {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    padding: 14px 32px;
+    font-family: var(--mono);
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+
+  .btn-primary:hover { background: var(--blue-bright); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: none;
+    font-family: var(--mono);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 14px 8px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .btn-ghost:hover { opacity: 1; }
+
+  .hero-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hero-img-box {
+    width: 90%;
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, #1a2a35 0%, #0d1c28 100%);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-img-box::after {
+    content: 'FEATURED ITEM';
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    font-size: 10px;
+    color: var(--green);
+    letter-spacing: 2px;
+  }
+
+  .laptop-visual {
+    width: 70%;
+    height: 60%;
+    background: var(--green);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    transform: rotate(-5deg);
+  }
+
+  .laptop-visual span {
+    font-family: var(--sans);
+    font-size: 20px;
+    font-weight: 800;
+    color: #000;
+    line-height: 1.1;
+  }
+
+  .laptop-visual small {
+    font-size: 9px;
+    color: #003;
+    letter-spacing: 1px;
+  }
+
+  /* ============ BROWSE ============ */
+  .page-header {
+    padding: 40px 32px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-header h2 {
+    font-family: var(--sans);
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .page-header p {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .filters {
+    display: flex;
+    gap: 8px;
+    padding: 16px 32px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .filter-chip {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .filter-chip:hover, .filter-chip.active {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .browse-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+    padding: 24px 32px;
+  }
+
+  .bid-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .bid-card:hover {
+    border-color: var(--green);
+    transform: translateY(-2px);
+  }
+
+  .bid-card-img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    position: relative;
+  }
+
+  .bid-card-img.green-bg { background: linear-gradient(135deg, #003d1a, #00150a); }
+  .bid-card-img.blue-bg { background: linear-gradient(135deg, #001a40, #000d20); }
+  .bid-card-img.teal-bg { background: linear-gradient(135deg, #001a25, #000e14); }
+
+  .bid-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+  }
+
+  .status-live { background: var(--green); color: #000; }
+  .status-ending { background: #ff5722; color: #fff; }
+  .status-new { background: var(--blue); color: #fff; }
+
+  .bid-card-body { padding: 14px; }
+
+  .bid-card-title {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .bid-card-subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .bid-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .bid-price-label { font-size: 10px; color: var(--muted); }
+  .bid-price { font-size: 18px; color: var(--green); font-weight: 700; }
+
+  .bid-now-btn {
+    background: var(--green-dark);
+    border: 1px solid var(--green);
+    color: var(--green);
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+  }
+
+  .bid-now-btn:hover { background: var(--green); color: #000; }
+
+  /* ============ LIVE BID ============ */
+  .live-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    min-height: calc(100vh - 57px);
+  }
+
+  .live-main {
+    padding: 32px;
+    border-right: 1px solid var(--border);
+  }
+
+  .live-badge-big {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #1a0000;
+    border: 1px solid #ff3333;
+    color: #ff5555;
+    font-size: 10px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+    background: #ff3333;
+    border-radius: 50%;
+    animation: pulse 1.2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+
+  .live-item-title {
+    font-family: var(--sans);
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .live-item-sub {
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 24px;
+  }
+
+  .live-img-display {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: linear-gradient(135deg, #001a0d, #000d08);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .live-img-inner {
+    width: 50%;
+    background: var(--green);
+    border-radius: 8px;
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-3deg);
+    flex-direction: column;
+  }
+
+  .live-img-inner span {
+    font-family: var(--sans);
+    font-size: 18px;
+    font-weight: 800;
+    color: #000;
+  }
+
+  .live-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  .stat-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 6px; }
+  .stat-value { font-size: 22px; color: var(--green); font-weight: 700; }
+  .stat-value.white { color: var(--text); }
+  .stat-value.red { color: #ff5722; }
+
+  .countdown {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .time-unit { text-align: center; }
+  .time-num { font-size: 24px; color: #ff5722; font-weight: 700; }
+  .time-sep { color: #ff5722; font-size: 20px; margin-bottom: 14px; }
+  .time-lbl { font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+
+  /* SIDEBAR */
+  .live-sidebar { background: var(--bg2); display: flex; flex-direction: column; }
+
+  .sidebar-header {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-title {
+    font-family: var(--sans);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .bid-input-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .bid-input {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--green);
+    color: var(--green);
+    font-family: var(--mono);
+    font-size: 16px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    outline: none;
+  }
+
+  .bid-submit {
+    background: var(--green);
+    border: none;
+    color: #000;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+  }
+
+  .bid-submit:hover { background: var(--green-dim); }
+
+  .bid-feed { flex: 1; overflow-y: auto; padding: 16px 20px; }
+
+  .bid-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .bid-user { font-size: 12px; }
+  .bid-user-name { color: var(--text); }
+  .bid-user-time { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .bid-amount { font-size: 14px; color: var(--green); font-weight: 700; }
+  .bid-item.top { background: rgba(0,230,118,0.05); margin: 0 -20px; padding: 10px 20px; }
+  .bid-item.top .bid-amount { color: var(--green); }
+
+  /* ============ PORTFOLIO ============ */
+  .portfolio-hero {
+    padding: 48px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .avatar-ring {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid var(--green);
+    background: var(--green-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--sans);
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--green);
+    flex-shrink: 0;
+  }
+
+  .portfolio-name {
+    font-family: var(--sans);
+    font-size: 28px;
+    font-weight: 800;
+  }
+
+  .portfolio-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  .portfolio-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 12px;
+  }
+
+  .pstat { text-align: center; }
+  .pstat-num { font-size: 20px; color: var(--green); font-weight: 700; }
+  .pstat-lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    padding: 24px 32px;
+  }
+
+  .portfolio-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .portfolio-card:hover { border-color: var(--green); }
+
+  .portfolio-thumb {
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+  }
+
+  .portfolio-thumb.g1 { background: linear-gradient(135deg, #003d1a, #00150a); }
+  .portfolio-thumb.g2 { background: linear-gradient(135deg, #001a40, #000d20); }
+  .portfolio-thumb.g3 { background: linear-gradient(135deg, #3d2000, #1a0d00); }
+  .portfolio-thumb.g4 { background: linear-gradient(135deg, #1a003d, #0d0020); }
+
+  .portfolio-info { padding: 12px; }
+  .portfolio-item-name { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+  .portfolio-item-status {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 4px;
+  }
+
+  .won { background: rgba(0,230,118,0.15); color: var(--green); }
+  .active-bid { background: rgba(29,111,223,0.15); color: var(--blue-bright); }
+  .outbid { background: rgba(255,87,34,0.15); color: #ff7043; }
+
+  /* ============ NOTIFICATIONS ============ */
+  .notif-list { padding: 16px 32px; }
+
+  .notif-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .notif-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .icon-green { background: var(--green-dark); border: 1px solid var(--green); }
+  .icon-blue { background: #001a40; border: 1px solid var(--blue); }
+  .icon-red { background: #1a0000; border: 1px solid #ff3333; }
+  .icon-orange { background: #1a0800; border: 1px solid #ff5722; }
+
+  .notif-text { flex: 1; }
+  .notif-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .notif-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+  .notif-time { font-size: 10px; color: var(--muted); margin-top: 6px; }
+
+  .notif-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  .notif-dot.read { background: var(--border); }
+
+  /* SECTION LABEL */
+  .section-sep {
+    padding: 8px 32px;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+  }
+
+  /* SIGN UP */
+  .signup-overlay {
+    min-height: calc(100vh - 57px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 32px;
+  }
+
+  .signup-card {
+    background: var(--card);
+    border: 2px solid var(--green);
+    border-radius: 4px;
+    padding: 40px;
+    width: 100%;
+    max-width: 460px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .signup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+
+  .signup-title {
+    font-family: var(--sans);
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+  }
+
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--green);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 800;
+    color: #000;
+  }
+
+  .field-group { margin-bottom: 24px; }
+  .field-label { font-size: 13px; margin-bottom: 8px; display: block; }
+
+  .field-dots {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+    padding: 8px 0;
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field-dots:focus { border-bottom-color: var(--green); color: var(--text); letter-spacing: 1px; }
+
+  .form-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .rem-dot {
+    width: 14px;
+    height: 14px;
+    background: var(--green);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .forgot { font-size: 12px; color: #ff4444; cursor: pointer; font-style: italic; }
+
+  .btn-signup-main {
+    width: 100%;
+    background: var(--green);
+    border: none;
+    color: #000;
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 700;
+    padding: 16px;
+    border-radius: 50px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+    transition: background 0.2s;
+  }
+
+  .btn-signup-main:hover { background: var(--green-dim); }
+
+  .social-btns { display: flex; flex-direction: column; gap: 10px; }
+
+  .btn-social {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 14px;
+    border-radius: 50px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: border-color 0.2s;
+  }
+
+  .btn-social.google { background: rgba(0,180,80,0.08); border-color: var(--green); color: var(--green); }
+  .btn-social:hover { border-color: var(--green); }
+
+  /* Timer update */
+  @keyframes countBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .countdown-active { animation: countBlink 2s infinite; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">MS_BiddD</div>
+  <ul class="nav-links">
+    <li onclick="showPage('home')" class="active" id="nav-home">home</li>
+    <li onclick="showPage('browse')" id="nav-browse">bidd</li>
+    <li onclick="showPage('live')" id="nav-live">live bid</li>
+    <li onclick="showPage('portfolio')" id="nav-portfolio">portfolio</li>
+    <li onclick="showPage('noti')" id="nav-noti">noti</li>
+    <li onclick="showPage('signup')" id="nav-signup" style="color: var(--green); border-bottom-color: var(--green);">sign up</li>
+  </ul>
+</nav>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="glow-blob glow-green"></div>
+    <div class="glow-blob glow-blue"></div>
+    <div class="glow-blob glow-green2"></div>
+    <div class="hero-left">
+      <h1>bidd for your dream</h1>
+      <div class="hero-tag">
+        <span class="item-name">laptop</span>
+        <span class="live-badge">67 live bid</span>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="showPage('signup')">sign up</button>
+        <button class="btn-ghost" onclick="showPage('signup')">login</button>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-img-box">
+        <div class="laptop-visual">
+          <span>16</span>
+          <span>QUALITY</span>
+          <span>ENVIRONMENT</span>
+          <small>PSD FILES</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BROWSE / BIDD PAGE -->
+<div class="page" id="page-browse">
+  <div class="page-header">
+    <h2>browse bidds</h2>
+    <p>247 active listings · updated live</p>
+  </div>
+  <div class="filters">
+    <div class="filter-chip active">all items</div>
+    <div class="filter-chip">laptops</div>
+    <div class="filter-chip">phones</div>
+    <div class="filter-chip">tablets</div>
+    <div class="filter-chip">audio</div>
+    <div class="filter-chip">cameras</div>
+    <div class="filter-chip">gaming</div>
+    <div class="filter-chip" onclick="sortCards()">↑ price</div>
+  </div>
+  <div class="browse-grid" id="browse-grid">
+    <div class="bid-card">
+      <div class="bid-card-img green-bg">
+        <span style="font-size:52px;">💻</span>
+        <span class="bid-status status-live">LIVE</span>
+      </div>
+      <div class="bid-card-body">
+        <div class="bid-card-title">MacBook Pro 16"</div>
+        <div class="bid-card-subtitle">M3 Max · 64GB · 2TB SSD</div>
+        <div class="bid-card-footer">
+          <div>
+            <div class="bid-price-label">current bid</div>
+            <div class="bid-price">$2,340</div>
+          </div>
+          <button class="bid-now-btn" onclick="showPage('live')">bid now</button>
+        </div>
+      </div>
+    </div>
+    <div class="bid-card">
+      <div class="bid-card-img blue-bg">
+        <span style="font-size:52px;">📱</span>
+        <span class="bid-status status-ending">ENDING</span>
+      </div>
+      <div class="bid-card-body">
+        <div class="bid-card-title">iPhone 15 Pro Max</div>
+        <div class="bid-card-subtitle">512GB · Natural Titanium</div>
+        <div class="bid-card-footer">
+          <div>
+            <div class="bid-price-label">current bid</div>
+            <div class="bid-price">$890</div>
+          </div>
+          <button class="bid-now-btn" onclick="showPage('live')">bid now</button>
+        </div>
+      </div>
+    </div>
+    <div class="bid-card">
+      <div class="bid-card-img teal-bg">
+        <span style="font-size:52px;">🎧</span>
+        <span class="bid-status status-new">NEW</span>
+      </div>
+      <div class="bid-card-body">
+        <div class="bid-card-title">Sony WH-1000XM5</div>
+        <div class="bid-card-subtitle">Wireless ANC · Midnight Black</div>
+        <div class="bid-card-footer">
+          <div>
+            <div class="bid-price-label">current bid</div>
+            <div class="bid-price">$210</div>
+          </div>
+          <button class="bid-now-btn" onclick="showPage('live')">bid now</button>
+        </div>
+      </div>
+    </div>
+    <div class="bid-card">
+      <div class="bid-card-img green-bg">
+        <span style="font-size:52px;">📷</span>
+        <span class="bid-status status-live">LIVE</span>
+      </div>
+      <div class="bid-card-body">
+        <div class="bid-card-title">Sony A7R V</div>
+        <div class="bid-card-subtitle">61MP Full-Frame Mirrorless</div>
+        <div class="bid-card-footer">
+          <div>
+            <div class="bid-price-label">current bid</div>
+            <div class="bid-price">$2,910</div>
+          </div>
+          <button class="bid-now-btn" onclick="showPage('live')">bid now</button>
+        </div>
+      </div>
+    </div>
+    <div class="bid-card">
+      <div class="bid-card-img blue-bg">
+        <span style="font-size:52px;">🎮</span>
+        <span class="bid-status status-live">LIVE</span>
+      </div>
+      <div class="bid-card-body">
+        <div class="bid-card-title">PS5 Bundle</div>
+        <div class="bid-card-subtitle">Disc Edition + 3 Games</div>
+        <div class="bid-card-footer">
+          <div>
+            <div class="bid-price-label">current bid</div>
+            <div class="bid-price">$540</div>
+          </div>
+          <button class="bid-now-btn" onclick="showPage('live')">bid now</button>
+        </div>
+      </div>
+    </div>
+    <div class="bid-card">
+      <div class="bid-card-img teal-bg">
+        <span style="font-size:52px;">⌚</span>
+        <span class="bid-status status-ending">ENDING</span>
+      </div>
+      <div class="bid-card-body">
+        <div class="bid-card-title">Apple Watch Ultra 2</div>
+        <div class="bid-card-subtitle">49mm · Alpine Loop</div>
+        <div class="bid-card-footer">
+          <div>
+            <div class="bid-price-label">current bid</div>
+            <div class="bid-price">$680</div>
+          </div>
+          <button class="bid-now-btn" onclick="showPage('live')">bid now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIVE BID PAGE -->
+<div class="page" id="page-live">
+  <div class="live-layout">
+    <div class="live-main">
+      <div class="live-badge-big">
+        <div class="pulse-dot"></div>
+        LIVE AUCTION
+      </div>
+      <div class="live-item-title">MacBook Pro 16"</div>
+      <div class="live-item-sub">M3 Max · 64GB RAM · 2TB SSD · Space Black · Sealed in box</div>
+      <div class="live-img-display">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 70%, rgba(0,230,118,0.08),transparent 60%);"></div>
+        <div class="live-img-inner">
+          <span>16</span>
+          <span style="font-size:12px;color:#002;">MACBOOK PRO</span>
+        </div>
+      </div>
+      <div class="live-stats">
+        <div class="stat-card">
+          <div class="stat-label">CURRENT BID</div>
+          <div class="stat-value" id="current-bid">$2,340</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">TOTAL BIDDERS</div>
+          <div class="stat-value white">67</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">TIME LEFT</div>
+          <div class="countdown countdown-active">
+            <div class="time-unit"><div class="time-num" id="t-min">04</div><div class="time-lbl">MIN</div></div>
+            <div class="time-sep">:</div>
+            <div class="time-unit"><div class="time-num" id="t-sec">32</div><div class="time-lbl">SEC</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:16px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;">
+        <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;">ITEM DETAILS</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;">
+          <div style="color:var(--muted);">Condition</div><div>Sealed / New</div>
+          <div style="color:var(--muted);">Retail Price</div><div>$3,499</div>
+          <div style="color:var(--muted);">Min Increment</div><div>$50</div>
+          <div style="color:var(--muted);">Seller</div><div style="color:var(--green);">@TechDealKH</div>
+        </div>
+      </div>
+    </div>
+    <div class="live-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">place your bid</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">min bid: <span style="color:var(--green)">$2,390</span></div>
+        <div class="bid-input-row">
+          <input class="bid-input" type="text" placeholder="$2,390" id="bid-input-val">
+          <button class="bid-submit" onclick="placeBid()">BID!</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button onclick="quickBid(50)" style="flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:10px;padding:6px;border-radius:4px;cursor:pointer;">+$50</button>
+          <button onclick="quickBid(100)" style="flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:10px;padding:6px;border-radius:4px;cursor:pointer;">+$100</button>
+          <button onclick="quickBid(250)" style="flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:10px;padding:6px;border-radius:4px;cursor:pointer;">+$250</button>
+        </div>
+      </div>
+      <div class="bid-feed" id="bid-feed">
+        <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:10px;">BID HISTORY</div>
+        <div class="bid-item top">
+          <div class="bid-user">
+            <div class="bid-user-name">@you</div>
+            <div class="bid-user-time">just now · leading</div>
+          </div>
+          <div class="bid-amount">$2,340</div>
+        </div>
+        <div class="bid-item">
+          <div class="bid-user">
+            <div class="bid-user-name">@SaraLim99</div>
+            <div class="bid-user-time">2 min ago</div>
+          </div>
+          <div class="bid-amount">$2,290</div>
+        </div>
+        <div class="bid-item">
+          <div class="bid-user">
+            <div class="bid-user-name">@TechBidder</div>
+            <div class="bid-user-time">5 min ago</div>
+          </div>
+          <div class="bid-amount">$2,200</div>
+        </div>
+        <div class="bid-item">
+          <div class="bid-user">
+            <div class="bid-user-name">@KhmerDeals</div>
+            <div class="bid-user-time">7 min ago</div>
+          </div>
+          <div class="bid-amount">$2,100</div>
+        </div>
+        <div class="bid-item">
+          <div class="bid-user">
+            <div class="bid-user-name">@CryptoKid</div>
+            <div class="bid-user-time">10 min ago</div>
+          </div>
+          <div class="bid-amount">$2,000</div>
+        </div>
+        <div class="bid-item">
+          <div class="bid-user">
+            <div class="bid-user-name">@AnonymousX</div>
+            <div class="bid-user-time">14 min ago</div>
+          </div>
+          <div class="bid-amount">$1,900</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PORTFOLIO PAGE -->
+<div class="page" id="page-portfolio">
+  <div class="portfolio-hero">
+    <div class="avatar-ring">MS</div>
+    <div>
+      <div class="portfolio-name">MS_BiddD User</div>
+      <div class="portfolio-sub">member since 2024 · verified bidder</div>
+      <div class="portfolio-stats">
+        <div class="pstat"><div class="pstat-num">12</div><div class="pstat-lbl">WON</div></div>
+        <div class="pstat"><div class="pstat-num">3</div><div class="pstat-lbl">ACTIVE</div></div>
+        <div class="pstat"><div class="pstat-num">$8.2K</div><div class="pstat-lbl">SPENT</div></div>
+        <div class="pstat"><div class="pstat-num">98%</div><div class="pstat-lbl">WIN RATE</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="section-sep">active bids</div>
+  <div class="portfolio-grid">
+    <div class="portfolio-card">
+      <div class="portfolio-thumb g1"><span style="font-size:48px;">💻</span></div>
+      <div class="portfolio-info">
+        <div class="portfolio-item-name">MacBook Pro 16"</div>
+        <div style="font-size:12px;color:var(--green);margin-top:2px;">$2,340 · leading</div>
+        <span class="portfolio-item-status active-bid">active bid</span>
+      </div>
+    </div>
+    <div class="portfolio-card">
+      <div class="portfolio-thumb g2"><span style="font-size:48px;">🎮</span></div>
+      <div class="portfolio-info">
+        <div class="portfolio-item-name">PS5 Bundle</div>
+        <div style="font-size:12px;color:#ff7043;margin-top:2px;">$540 · outbid</div>
+        <span class="portfolio-item-status outbid">outbid</span>
+      </div>
+    </div>
+    <div class="portfolio-card">
+      <div class="portfolio-thumb g3"><span style="font-size:48px;">⌚</span></div>
+      <div class="portfolio-info">
+        <div class="portfolio-item-name">Apple Watch Ultra</div>
+        <div style="font-size:12px;color:var(--green);margin-top:2px;">$680 · leading</div>
+        <span class="portfolio-item-status active-bid">active bid</span>
+      </div>
+    </div>
+  </div>
+  <div class="section-sep">won items</div>
+  <div class="portfolio-grid">
+    <div class="portfolio-card">
+      <div class="portfolio-thumb g4"><span style="font-size:48px;">📱</span></div>
+      <div class="portfolio-info">
+        <div class="portfolio-item-name">iPhone 15 Pro</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">Won at $760</div>
+        <span class="portfolio-item-status won">won</span>
+      </div>
+    </div>
+    <div class="portfolio-card">
+      <div class="portfolio-thumb g1"><span style="font-size:48px;">🎧</span></div>
+      <div class="portfolio-info">
+        <div class="portfolio-item-name">AirPods Pro 2</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">Won at $180</div>
+        <span class="portfolio-item-status won">won</span>
+      </div>
+    </div>
+    <div class="portfolio-card">
+      <div class="portfolio-thumb g2"><span style="font-size:48px;">📷</span></div>
+      <div class="portfolio-info">
+        <div class="portfolio-item-name">GoPro Hero 12</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">Won at $230</div>
+        <span class="portfolio-item-status won">won</span>
+      </div>
+    </div>
+    <div class="portfolio-card">
+      <div class="portfolio-thumb g3"><span style="font-size:48px;">🖥️</span></div>
+      <div class="portfolio-info">
+        <div class="portfolio-item-name">LG UltraWide 34"</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">Won at $490</div>
+        <span class="portfolio-item-status won">won</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS PAGE -->
+<div class="page" id="page-noti">
+  <div class="page-header">
+    <h2>notifications</h2>
+    <p>4 unread · last updated just now</p>
+  </div>
+  <div class="section-sep">today</div>
+  <div class="notif-list">
+    <div class="notif-item">
+      <div class="notif-icon icon-red"><span style="font-size:16px;">⚡</span></div>
+      <div class="notif-text">
+        <div class="notif-title">you've been outbid!</div>
+        <div class="notif-desc">@TechBidder placed $2,390 on MacBook Pro 16". Place a new bid to reclaim your lead.</div>
+        <div class="notif-time">2 minutes ago</div>
+      </div>
+      <div class="notif-dot"></div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-icon icon-orange"><span style="font-size:16px;">⏱</span></div>
+      <div class="notif-text">
+        <div class="notif-title">auction ending soon</div>
+        <div class="notif-desc">iPhone 15 Pro Max closes in 4 minutes. Current leading bid is $890.</div>
+        <div class="notif-time">5 minutes ago</div>
+      </div>
+      <div class="notif-dot"></div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-icon icon-green"><span style="font-size:16px;">🏆</span></div>
+      <div class="notif-text">
+        <div class="notif-title">you won an auction!</div>
+        <div class="notif-desc">Congratulations! You won AirPods Pro 2 at $180. Seller will contact you within 24h.</div>
+        <div class="notif-time">1 hour ago</div>
+      </div>
+      <div class="notif-dot"></div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-icon icon-blue"><span style="font-size:16px;">🔔</span></div>
+      <div class="notif-text">
+        <div class="notif-title">new item in your watchlist</div>
+        <div class="notif-desc">Sony A7R V has started bidding. Starting price $2,800 · 12 bidders already.</div>
+        <div class="notif-time">3 hours ago</div>
+      </div>
+      <div class="notif-dot"></div>
+    </div>
+  </div>
+  <div class="section-sep">yesterday</div>
+  <div class="notif-list">
+    <div class="notif-item">
+      <div class="notif-icon icon-green"><span style="font-size:16px;">✓</span></div>
+      <div class="notif-text">
+        <div class="notif-title">payment confirmed</div>
+        <div class="notif-desc">Your payment of $760 for iPhone 15 Pro has been confirmed. Tracking: #KH2984771.</div>
+        <div class="notif-time">Yesterday · 3:42 PM</div>
+      </div>
+      <div class="notif-dot read"></div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-icon icon-blue"><span style="font-size:16px;">👤</span></div>
+      <div class="notif-text">
+        <div class="notif-title">profile verified</div>
+        <div class="notif-desc">Your identity has been verified. You now have access to premium auctions.</div>
+        <div class="notif-time">Yesterday · 10:15 AM</div>
+      </div>
+      <div class="notif-dot read"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SIGN UP PAGE -->
+<div class="page" id="page-signup">
+  <div class="signup-overlay">
+    <div class="glow-blob glow-green" style="bottom:5%;left:5%;"></div>
+    <div class="glow-blob glow-blue" style="top:10%;right:10%;"></div>
+    <div class="signup-card">
+      <div class="signup-header">
+        <div class="signup-title">SIGN UP</div>
+        <div class="brand-icon">M</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">username</label>
+        <input class="field-dots" type="text" placeholder="........................." />
+      </div>
+      <div class="field-group">
+        <label class="field-label">password</label>
+        <input class="field-dots" type="password" placeholder="........................." />
+      </div>
+      <div class="field-group">
+        <label class="field-label">email</label>
+        <input class="field-dots" type="email" placeholder="........................." />
+      </div>
+      <div style="border-bottom:1px solid var(--border);margin:4px 0 16px;"></div>
+      <div class="form-bottom">
+        <div class="remember">
+          <div class="rem-dot"></div>
+          remember me
+        </div>
+        <div class="forgot">forgot password?</div>
+      </div>
+      <button class="btn-signup-main">sign up</button>
+      <div class="social-btns">
+        <button class="btn-social">apple</button>
+        <button class="btn-social google">google</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentBid = 2340;
+  let seconds = 272;
+
+  function showPage(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-links li').forEach(l => l.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.getElementById('nav-' + page).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function placeBid() {
+    const input = document.getElementById('bid-input-val');
+    const val = parseInt(input.value.replace('$', ''));
+    if (!val || val <= currentBid) {
+      input.style.borderColor = '#ff4444';
+      setTimeout(() => input.style.borderColor = 'var(--green)', 1000);
+      return;
+    }
+    currentBid = val;
+    document.getElementById('current-bid').textContent = '$' + val.toLocaleString();
+    const feed = document.getElementById('bid-feed');
+    const newBid = document.createElement('div');
+    newBid.className = 'bid-item top';
+    newBid.innerHTML = `<div class="bid-user"><div class="bid-user-name">@you</div><div class="bid-user-time">just now · leading</div></div><div class="bid-amount">$${val.toLocaleString()}</div>`;
+    feed.querySelectorAll('.bid-item.top').forEach(el => el.classList.remove('top'));
+    feed.insertBefore(newBid, feed.children[1]);
+    input.value = '';
+    input.placeholder = '$' + (val + 50).toLocaleString();
+  }
+
+  function quickBid(amount) {
+    const input = document.getElementById('bid-input-val');
+    input.value = '$' + (currentBid + amount).toLocaleString();
+  }
+
+  setInterval(() => {
+    if (seconds > 0) {
+      seconds--;
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      document.getElementById('t-min').textContent = String(m).padStart(2, '0');
+      document.getElementById('t-sec').textContent = String(s).padStart(2, '0');
+    }
+  }, 1000);
+
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

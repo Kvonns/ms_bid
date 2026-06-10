@@ -1,0 +1,197 @@
+
+*{
+
+
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+    padding: 0;
+
+    
+}
+.card {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    
+}
+body,html{
+    background-color: rgb(9, 20, 35);
+    color: azure;
+    overflow-y: auto; /* or visible */
+    height: 100%;
+}
+#container{
+    padding: 10%;
+}
+.header{
+      position: sticky;
+  top: 0;
+  z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background-color: #0b1d37;
+    border: #ff6565 1px solid;
+}
+.nav a{
+    display: flex;
+    justify-content: space-between;
+    padding-right: 30px;
+    gap: 20px;
+    color: aquamarine;
+    text-decoration: none;
+    transition: color 0.5s;
+    font-size: 16px;
+    font-weight: 800;
+
+}
+.nav a:hover{
+    color: #ff6565;
+}
+.logo{
+    color: aqua;
+    font-weight: 900;
+    font-size: 18px;
+}
+
+
+
+.liveAution p{
+    width: 15%;
+    font-weight: 800;
+    font-size: 12px;
+    color:#ff6565;
+    border: 3px #ff6565 solid;
+    border-radius: 15px;
+    padding: 5px;
+    text-align: center;
+    text-overflow: ellipsis;
+
+
+
+    
+}
+.visual,.detailed{
+    width: 100%;
+    height: auto;
+    
+    background-color:  rgb(11, 29, 55);
+    border-radius: 20px;
+    text-align: start;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #ff6565;
+
+}
+.detailed{
+    margin-top: 15px;
+}
+.detailedInfo{
+    padding: 15px;
+    font-weight: 600;
+}
+.visual img{
+
+     border-radius: 30px;
+     padding: 20px;
+
+         width: 100%;
+  height: auto;
+  max-height: 800px;
+  object-fit: cover;
+  transition: all 0.3s ease
+ 
+}.visual img:hover{
+    width: 90%
+}
+.detailed{
+    display: flex;
+    justify-content: space-between;
+}
+.currentBid{
+    border: #ff6565 2px solid;
+
+        padding: 15px;
+        background-color: #091423 ;
+    
+}   
+.currentBid h3{
+    color: aquamarine;
+}
+.currentBid h2{
+    font-weight: 700;
+
+    border-radius: 2px;
+    padding: 5px;
+    background-color: #ff6565;
+}
+#idk{
+    padding: 20px 
+}
+
+#placingBid{
+
+
+    border: #ff6565 2px solid;
+    background-color: rgb(11, 29, 55);
+    border-radius: 15px;
+        min-height: 100vh;
+        height: 100%;
+}
+
+#inputBid{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border: #ff6565 1px solid;
+
+}
+#forBid input{
+    background-color: rgb(9, 20, 35);
+    border: #ff6565 1px solid;
+    height: 5vh;
+    width: 100%;
+    border-radius: 10px;
+    color: azure;
+    padding: 2px;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+#forBid{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+#forBid button{
+    background-color: rgb(45, 230, 169);
+    border: rgb(0, 255, 170) 1px solid;
+    font-weight: 800;
+    height: 5vh;
+    width: 50%;
+    
+    padding: 2px;
+    border-radius: 10px;
+}
+#forBid button:hover{
+    background-color: rgb(73, 140, 136) ;
+}
+.prevBid{
+    padding: 20px;
+}
+#info{
+    display: flex;
+    justify-content: space-between;
+    border: rgb(45, 230, 169) 1px solid;
+    padding: 10px;
+
+}
+#prevAmount{
+    color: rgb(45, 230, 169);
+
+}

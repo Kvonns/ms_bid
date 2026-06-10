@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>Bid</title>
+  </head>
+  <body>
+    <div class="header">
+      <div class="logo">Ms_BidD</div>
+      <div class="nav">
+        <a href="">Home</a>
+        <a href="liveBid.html">Live Bid</a>
+        <a href="toBid.html">To Bid</a>
+        <a href="">Profile</a>
+      </div>
+    </div>
+    <div class="container-fluid px-0" id="container">
+      <div class="row g-3 mx-0" id="idk">
+        <!-- First column with card -->
+        <div class="col-md-8">
+          <div id="biddingCard">
+            <div class="liveAution"><p>Live actions</p></div>
+            <div class="infoProd">
+              <h2 class="infoName">Name Product</h2>
+              <p class="infoDes">Description</p>
+            </div>
+            <!--Image here-->
+            <div class="visual">
+              <img
+                src="https://i.pinimg.com/736x/b2/71/31/b27131042bcce42ab9cec484e0691888.jpg"
+                alt=""
+              />
+            </div>
+
+            <div class="detailed" id="detailedInfo">
+              <div class="detailedInfo" id="detailedInfos"></div>
+
+              <div class="currentBid" id="currentBid">
+                <div id="currentBID"></div>
+                <div id="totalBidder"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Second column with 67676767 right next to first column -->
+        <div class="col-md-4">
+          <div id="placingBid">
+            <div id="inputBid">
+              <p>Place Your bid</p>
+              <p id="minBid">Min bid amount $</p>
+              <div id="forBid">
+                <input type="number" name="amount" id="amountBid" />
+                <button id="btnBid" type="button">BidD</button>
+              </div>
+            </div>
+            <div class="prevBid" id="prevBid">
+              <p>Bid history</p>
+              <div id="info">
+                <p id="prevName">@name</p>
+                <p id="prevAmount">2000$</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
