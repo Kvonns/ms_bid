@@ -32,7 +32,7 @@
     overflow-x: hidden;
   }
 
-  /* NOISE OVERLAY */
+  
   body::before {
     content: '';
     position: fixed;
@@ -43,7 +43,7 @@
     opacity: 0.6;
   }
 
-  /* NAV */
+  
   nav {
     display: flex;
     align-items: center;
@@ -87,11 +87,11 @@
     border-bottom-color: var(--green);
   }
 
-  /* PAGES */
+  
   .page { display: none; position: relative; z-index: 1; }
   .page.active { display: block; }
 
-  /* ============ HOME ============ */
+  
   .hero {
     min-height: calc(100vh - 57px);
     display: grid;
@@ -237,7 +237,7 @@
     letter-spacing: 1px;
   }
 
-  /* ============ BROWSE ============ */
+  
   .page-header {
     padding: 40px 32px 24px;
     border-bottom: 1px solid var(--border);
@@ -371,7 +371,7 @@
 
   .bid-now-btn:hover { background: var(--green); color: #000; }
 
-  /* ============ LIVE BID ============ */
+  
   .live-layout {
     display: grid;
     grid-template-columns: 1fr 360px;
@@ -486,7 +486,7 @@
   .time-sep { color: #ff5722; font-size: 20px; margin-bottom: 14px; }
   .time-lbl { font-size: 9px; color: var(--muted); letter-spacing: 1px; }
 
-  /* SIDEBAR */
+  
   .live-sidebar { background: var(--bg2); display: flex; flex-direction: column; }
 
   .sidebar-header {
@@ -551,7 +551,7 @@
   .bid-item.top { background: rgba(0,230,118,0.05); margin: 0 -20px; padding: 10px 20px; }
   .bid-item.top .bid-amount { color: var(--green); }
 
-  /* ============ PORTFOLIO ============ */
+  
   .portfolio-hero {
     padding: 48px 32px;
     border-bottom: 1px solid var(--border);
@@ -640,7 +640,7 @@
   .active-bid { background: rgba(29,111,223,0.15); color: var(--blue-bright); }
   .outbid { background: rgba(255,87,34,0.15); color: #ff7043; }
 
-  /* ============ NOTIFICATIONS ============ */
+  
   .notif-list { padding: 16px 32px; }
 
   .notif-item {
@@ -684,7 +684,7 @@
 
   .notif-dot.read { background: var(--border); }
 
-  /* SECTION LABEL */
+  
   .section-sep {
     padding: 8px 32px;
     font-size: 10px;
@@ -695,7 +695,7 @@
     text-transform: uppercase;
   }
 
-  /* SIGN UP */
+  
   .signup-overlay {
     min-height: calc(100vh - 57px);
     display: flex;
@@ -824,7 +824,7 @@
   .btn-social.google { background: rgba(0,180,80,0.08); border-color: var(--green); color: var(--green); }
   .btn-social:hover { border-color: var(--green); }
 
-  /* Timer update */
+  
   @keyframes countBlink {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
@@ -846,7 +846,7 @@
   </ul>
 </nav>
 
-<!-- HOME PAGE -->
+
 <div class="page active" id="page-home">
   <div class="hero">
     <div class="glow-blob glow-green"></div>
@@ -876,7 +876,7 @@
   </div>
 </div>
 
-<!-- BROWSE / BIDD PAGE -->
+
 <div class="page" id="page-browse">
   <div class="page-header">
     <h2>browse bidds</h2>
@@ -998,7 +998,7 @@
   </div>
 </div>
 
-<!-- LIVE BID PAGE -->
+
 <div class="page" id="page-live">
   <div class="live-layout">
     <div class="live-main">
@@ -1106,7 +1106,7 @@
   </div>
 </div>
 
-<!-- PORTFOLIO PAGE -->
+
 <div class="page" id="page-portfolio">
   <div class="portfolio-hero">
     <div class="avatar-ring">MS</div>
@@ -1185,7 +1185,7 @@
   </div>
 </div>
 
-<!-- NOTIFICATIONS PAGE -->
+
 <div class="page" id="page-noti">
   <div class="page-header">
     <h2>notifications</h2>
@@ -1253,7 +1253,7 @@
   </div>
 </div>
 
-<!-- SIGN UP PAGE -->
+
 <div class="page" id="page-signup">
   <div class="signup-overlay">
     <div class="glow-blob glow-green" style="bottom:5%;left:5%;"></div>
