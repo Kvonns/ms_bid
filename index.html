@@ -128,7 +128,7 @@
                 <button class="nav-link w-100" id="signup-tab" data-bs-toggle="tab" data-bs-target="#signup-panel" type="button" role="tab">Sign Up</button>
               </li>
             </ul>
-            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-close="modal" aria-label="Close" style="margin-top: -15px;" id="closebtn"></button>
+            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-close="modal" aria-label="Close" style="margin-top: -15px;"></button>
           </div>
           
           <div class="modal-body pt-4">
@@ -180,7 +180,6 @@
       document.addEventListener("DOMContentLoaded", () => {
         const authBtn = document.getElementById("authBtn");
         const profileLink = document.getElementById("profileLink");
-        const closebtn = document.getElementById("closebtn")
         const loginForm = document.getElementById("loginForm");
         const signupForm = document.getElementById("signupForm");
         const getUsersDB = () => JSON.parse(localStorage.getItem("usersDB")) || [];
@@ -246,14 +245,11 @@
           } else {
             alert("Invalid username or password credentials. Please try again.");
           }
-        });  
+        });
         updateUI();
-            closebtn.addEventListener('click' , function(){
-            const modalEl = document.getElementById("authModal");
-            const modalInstance = bootstrap.Modal.getInstance(modalEl); 
-            modalInstance.hide();
-            })
       });
+      //npx localtunnel --port 5500: use this to get the ip address and paste it into the link
     </script>
   </body>
 </html>
+
