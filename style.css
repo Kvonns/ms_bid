@@ -11,45 +11,39 @@
     box-shadow: none !important;
 }
 
-body, html {
+body,html{
     background-color: rgb(9, 20, 35);
     color: azure;
-    overflow-y: auto;
+    overflow-y: auto; /* or visible */
     height: 100%;
     overflow-x: hidden;
 }
 
-.header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+.header{
+      position: sticky;
+  top: 0;
+  z-index: 1000;
     display: flex;
     justify-content: space-between;
-    align-items: center; 
     padding: 15px;
     background-color: #0b1d37;
-    border-bottom: #ff6565 1px solid; 
+    border: #ff6565 1px solid;
 }
-
-
-.nav {
+.nav a{
     display: flex;
-    flex-direction: row;
-    align-items: center;
-}
+    justify-content: space-between;
+    text-align: center;
+    padding-right: 30px;
+    margin-top: 5px;
 
-.nav a {
-    display: flex;
-    padding-left: 15px;
-    padding-right: 15px;
     color: aquamarine;
     text-decoration: none;
     transition: color 0.5s;
     font-size: 16px;
     font-weight: 800;
-}
 
-.nav a:hover {
+}
+.nav a:hover{
     color: #ff6565;
 }
 
@@ -58,7 +52,10 @@ body, html {
     font-weight: 900;
     font-size: 18px;
 }
+#startBid:hover {
+   transform: scale(1.05);
 
+}
 .liveAution p {
     width: 15%;
     font-weight: 800;
@@ -80,12 +77,17 @@ body, html {
     justify-content: center;
     align-items: center;
     border: 2px solid #ff6565;
+
 }
 
 .detailed {
     margin-top: 15px;
     display: flex;
     justify-content: space-between;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.detailed p{
+    font-family: monospace;
 }
 
 .detailedInfo {
@@ -180,7 +182,7 @@ input[type=number] {
 }
 
 #forBid button:hover, .btninfo button:hover {
-    background-color: rgb(73, 140, 136);
+    background-color: rgb(98, 255, 245);
 }
 
 .prevBid {
@@ -268,18 +270,18 @@ input[type=number] {
 
 .auth-action-btn {
     background: transparent;
-    border: rgb(0, 255, 170) 2px solid;
+    border: #00ffaa 2px solid;
     color: aquamarine;
     font-weight: 800;
     font-size: 14px;
-    padding: 6px 16px;
+    padding: 8px 16px;
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
     margin-left: 15px;
 }
 .auth-action-btn:hover {
-    background-color: rgba(45, 230, 169, 0.1);
+    background-color: rgba(0, 0, 0, 0.1);
     transform: translateY(-1px);
 }
 
@@ -294,7 +296,7 @@ input[type=number] {
 
 .structured-auth-tabs .nav-link {
     background: transparent !important;
-    color: gray !important;
+    color: rgb(108, 145, 156) !important;
     border: none !important;
     font-weight: 800;
     font-size: 16px;
@@ -309,23 +311,23 @@ input[type=number] {
 
 .auth-input {
     background-color: rgb(9, 20, 35) !important;
-    border: 1px solid #ff6565 !important;
+    border: 1px solid #00ffaa    !important;
     border-radius: 10px !important;
     color: azure !important;
     padding: 10px 12px !important;
 }
 .auth-input::placeholder {
-    color: rgba(240, 255, 255, 0.3);
+    color: rgba(240, 255, 250, 0.3);
 }
 .auth-input:focus {
-    box-shadow: 0 0 8px rgba(0, 255, 255, 0.5) !important;
-    border-color: aqua !important;
+    box-shadow: 0 0 8px rgba(0, 255, 170, 0.5) !important;
+    border-color: #00ffaa !important;
 }
 
 
 .auth-submit-btn {
     background-color: rgb(45, 230, 169);
-    border: rgb(0, 255, 170) 1px solid;
+    border: #00ffaa 1px solid;
     color: rgb(9, 20, 35);
     font-weight: 800;
     padding: 12px;
@@ -333,8 +335,11 @@ input[type=number] {
     transition: all 0.3s ease;
 }
 .auth-submit-btn:hover {
-    background-color: rgb(73, 140, 136);
-    color: azure;
+    background-color: #00ffaa ;
+    transform: translateY(-1px) scale(1.02);
+    color: rgb(0, 0, 0);
+    transition: all 0.3s ease;
+    border: black 3px solid;
 }
 
 
