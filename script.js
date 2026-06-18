@@ -12,7 +12,7 @@ let infoProd = document.getElementById("infoProd");
 let image = document.getElementById("visualImage");
 let detailedInfo = document.getElementById("detailedInfos");
 
-const name = localStorage.getItem("loggedInUser") || "vonvon";
+const name = localStorage.getItem("loggedInUser") || "Guest";
 let totalB = laptopData.bidderCount || 0;
 let current = laptopData.currentBid || 0;
 let defaultMinimum = laptopData.minIncrement || 67;
