@@ -1,27 +1,110 @@
-let laptop= [
-{
-    
+let laptop = [
+  {
     id: "mac-111",
-    name: "Macbook Pro M5",
-    description: ["1000GB SSD", "24GB RAM"],
-    condition: "Used",
+    name: "MacBook Pro 14 M5",
+    description: ["1000GB SSD", "24GB RAM", "14-inch Liquid Retina XDR"],
+    condition: "Used - Excellent",
     retailedPriced: 3000,
+    currentBid: 1850,
+    minIncrement: 75,
+    bidderCount: 12,
+    endsIn: "2h 18m",
     sellerName: "MSBIDD",
-    img: "https://i.pinimg.com/736x/dd/6b/e4/dd6be478c7fcd08d5438c5f512577419.jpg"
-  
-    
-},
-{
+    img: "https://i.pinimg.com/736x/dd/6b/e4/dd6be478c7fcd08d5438c5f512577419.jpg",
+  },
+  {
     id: "mac-112",
-    name: "Macbook air M4",
-    description: ["1000GB SSD", "24GB RAM"],
-    condition: "Used",
+    name: "MacBook Air M4",
+    description: ["1000GB SSD", "24GB RAM", "13-inch Midnight"],
+    condition: "Used - Like New",
     retailedPriced: 999,
+    currentBid: 720,
+    minIncrement: 50,
+    bidderCount: 8,
+    endsIn: "4h 05m",
     sellerName: "MSBIDD",
-    img: "https://i.pinimg.com/736x/bf/2e/aa/bf2eaa5e593822dccd31650ec880ff0b.jpg"
-}
-]
-let data = JSON.stringify(laptop, null ,2)
-console.log(data)
+    img: "https://i.pinimg.com/736x/bf/2e/aa/bf2eaa5e593822dccd31650ec880ff0b.jpg",
+  },
+  {
+    id: "dell-201",
+    name: "Dell XPS 13 Plus",
+    description: ["512GB SSD", "16GB RAM", "13.4-inch OLED Touch"],
+    condition: "Open Box",
+    retailedPriced: 1699,
+    currentBid: 980,
+    minIncrement: 50,
+    bidderCount: 15,
+    endsIn: "1h 42m",
+    sellerName: "TechVault",
+    img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "asus-301",
+    name: "ASUS ROG Zephyrus G14",
+    description: ["1TB SSD", "32GB RAM", "RTX 4070 Graphics"],
+    condition: "Used - Very Good",
+    retailedPriced: 2199,
+    currentBid: 1450,
+    minIncrement: 100,
+    bidderCount: 21,
+    endsIn: "55m",
+    sellerName: "GameHub",
+    img: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "len-401",
+    name: "Lenovo ThinkPad X1 Carbon",
+    description: ["1TB SSD", "16GB RAM", "14-inch WUXGA Display"],
+    condition: "Certified Refurbished",
+    retailedPriced: 1899,
+    currentBid: 1120,
+    minIncrement: 75,
+    bidderCount: 10,
+    endsIn: "6h 20m",
+    sellerName: "OfficeGear",
+    img: "https://images.unsplash.com/photo-1484788984921-03950022c9ef?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "hp-501",
+    name: "HP Spectre x360 14",
+    description: ["512GB SSD", "16GB RAM", "2-in-1 Touchscreen"],
+    condition: "Used - Good",
+    retailedPriced: 1499,
+    currentBid: 840,
+    minIncrement: 50,
+    bidderCount: 7,
+    endsIn: "8h 11m",
+    sellerName: "LaptopLane",
+    img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "surface-601",
+    name: "Surface Laptop 7",
+    description: ["512GB SSD", "16GB RAM", "13.8-inch PixelSense"],
+    condition: "Open Box",
+    retailedPriced: 1399,
+    currentBid: 910,
+    minIncrement: 50,
+    bidderCount: 9,
+    endsIn: "3h 33m",
+    sellerName: "MetroTech",
+    img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "acer-701",
+    name: "Acer Swift Go 14",
+    description: ["512GB SSD", "16GB RAM", "OLED Display"],
+    condition: "New",
+    retailedPriced: 1099,
+    currentBid: 690,
+    minIncrement: 40,
+    bidderCount: 6,
+    endsIn: "11h 08m",
+    sellerName: "MSBIDD",
+    img: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=900&q=80",
+  },
+];
+
+let data = JSON.stringify(laptop, null, 2);
 export default data;
 
