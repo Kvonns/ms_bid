@@ -19,38 +19,36 @@ body, html {
     overflow-x: hidden;
 }
 
-.header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+.header{
+      position: sticky;
+  top: 0;
+  z-index: 1000;
     display: flex;
     justify-content: space-between;
-    align-items: center; 
     padding: 15px;
     background-color: #0b1d37;
-    border-bottom: #ff6565 1px solid; 
+    border: #ff6565 1px solid;
 }
-
-
-.nav {
+.nav a{
     display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-
-.nav a {
-    display: flex;
-    padding-left: 15px;
-    padding-right: 15px;
+    justify-content: space-between;
+    padding-right: 30px;
+    gap: 20px;
     color: aquamarine;
     text-decoration: none;
     transition: color 0.5s;
     font-size: 16px;
     font-weight: 800;
+
+}
+.nav a:hover{
+    color: #ff6565;
 }
 
-.nav a:hover {
-    color: #ff6565;
+.logo {
+    color: aqua;
+    font-weight: 900;
+    font-size: 18px;
 }
 
 .logo {
