@@ -1,0 +1,32 @@
+<svg width="1440" height="669" viewBox="0 0 1440 669" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_fn_7_6)">
+<rect width="323.946" height="240.778" rx="10" transform="matrix(0.30079 0.953691 -0.68789 0.725815 170.629 75.1903)" fill="#001B33"/>
+<rect width="323.946" height="240.778" rx="10" transform="matrix(0.30079 0.953691 -0.68789 0.725815 1122.63 75.1903)" fill="#001B33"/>
+<rect width="323.946" height="240.778" rx="10" transform="matrix(0.30079 0.953691 -0.68789 0.725815 417.629 109.942)" fill="#001B33"/>
+<rect width="323.946" height="240.778" rx="10" transform="matrix(0.30079 0.953691 -0.68789 0.725815 1369.63 109.942)" fill="#001B33"/>
+<rect width="323.946" height="240.778" rx="10" transform="matrix(0.30079 0.953691 -0.68789 0.725815 658.697 109.942)" fill="#001B33"/>
+<rect width="323.946" height="240.778" rx="10" transform="matrix(0.30079 0.953691 -0.68789 0.725815 896.697 109.942)" fill="#001B33"/>
+</g>
+<defs>
+<filter id="filter0_fn_7_6" x="-72.6229" y="0" width="1617.31" height="668.837" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="40" result="effect1_foregroundBlur_7_6"/>
+<feTurbulence type="fractalNoise" baseFrequency="0.5 0.5" stitchTiles="stitch" numOctaves="3" result="noise" seed="339" />
+<feComponentTransfer in="noise" result="coloredNoise1">
+<feFuncR type="linear" slope="2" intercept="-0.5" />
+<feFuncG type="linear" slope="2" intercept="-0.5" />
+<feFuncB type="linear" slope="2" intercept="-0.5" />
+<feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/>
+</feComponentTransfer>
+<feComposite operator="in" in2="effect1_foregroundBlur_7_6" in="coloredNoise1" result="noise1Clipped" />
+<feComponentTransfer in="noise1Clipped" result="color1">
+<feFuncA type="table" tableValues="0 0.15" />
+</feComponentTransfer>
+<feMerge result="effect2_noise_7_6">
+<feMergeNode in="effect1_foregroundBlur_7_6" />
+<feMergeNode in="color1" />
+</feMerge>
+</filter>
+</defs>
+</svg>
