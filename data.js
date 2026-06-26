@@ -1,4 +1,4 @@
-const laptop = [
+let laptop = [
   {
     id: "mac-111",
     name: "MacBook Pro 14 M5",
@@ -36,7 +36,7 @@ const laptop = [
     bidderCount: 15,
     endsIn: "1h 42m",
     sellerName: "TechVault",
-    img: "https://i.pinimg.com/1200x/e4/10/47/e41047d60f38f33fda75fd747b949f2f.jpg",
+    img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=900&q=80",
   },
   {
     id: "asus-301",
@@ -49,7 +49,7 @@ const laptop = [
     bidderCount: 21,
     endsIn: "55m",
     sellerName: "GameHub",
-    img: "https://i.pinimg.com/1200x/d3/3e/57/d33e570501f34c8924b9239bf9618d28.jpg",
+    img: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80",
   },
   {
     id: "len-401",
@@ -107,5 +107,4 @@ const laptop = [
 
 let data = JSON.stringify(laptop, null, 2);
 export default data;
-
 

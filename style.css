@@ -4,22 +4,6 @@
     padding: 0;
     box-sizing: border-box;
 }
-:root {
-        --bg: #080e12;
-        --bg2: #0d1a20;
-        --bg3: #111f28;
-        --green: #00e676;
-        --green-dim: #00c15a;
-        --green-dark: #003d1a;
-        --blue: #1a6fdf;
-        --blue-bright: #2d8fff;
-        --text: #e8f0f5;
-        --muted: #5a7a8a;
-        --border: #1a3040;
-        --card: #0d1c24;
-        --mono: "Space Mono", monospace;
-        --sans: "Syne", sans-serif;
-      }
 
 .card {
     background-color: transparent !important;

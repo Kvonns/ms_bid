@@ -1,6 +1,5 @@
 import data from "./data.js";
 
-
 let datas = JSON.parse(data);
 let listcon = document.getElementById("containerTo");
 
@@ -25,7 +24,7 @@ for (let i = 0; i < datas.length; i++) {
 window.clickTogo = function (button, id, index) {
   let sentData = datas[index];
   localStorage.setItem("selectedLaptop", JSON.stringify(sentData));
-  window.location.href = "liveBid.php";
+  window.location.href = "liveBid.html";
 };
 
 

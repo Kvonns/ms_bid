@@ -3,20 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
-    />
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
     <title>Ms_BidD - Profile</title>
   </head>
@@ -25,7 +15,7 @@
       <div class="logo">Ms_BidD</div>
       <div class="nav">
         <a href="index.html">Home</a>
-        <a href="liveBid.php">Live Bid</a>
+        <a href="liveBid.html">Live Bid</a>
         <a href="toBid.html">To Bid</a>
         <a href="profile.html">Profile</a>
       </div>
@@ -33,33 +23,31 @@
 
     <main class="profile-page">
       <section class="profile-hero">
-        <div class="profile-avatar" id="profileAvatar">MS</div>
+        <div class="profile-avatar" id="profileAvatar">--</div>
         <div class="profile-heading">
           <p>Bidder Profile</p>
-          <h1 id="profileName">Guest Bidder</h1>
-          <span id="profileEmail">Login to connect your account details.</span>
+          <h1 id="profileName">Loading Profile...</h1>
+          <span id="profileEmail">Verifying credentials...</span>
         </div>
-        <button class="profile-action" id="profileLogout" type="button">
-          Logout
-        </button>
+        <button class="profile-action" id="profileLogout" type="button">Logout</button>
       </section>
 
       <section class="profile-stats">
         <div class="profile-stat-card">
           <span>Active Bids</span>
-          <strong>3</strong>
+          <strong id="statActive">0</strong>
         </div>
         <div class="profile-stat-card">
           <span>Won Items</span>
-          <strong>5</strong>
+          <strong id="statWon">0</strong>
         </div>
         <div class="profile-stat-card">
           <span>Total Spent</span>
-          <strong>$8.2K</strong>
+          <strong id="statSpent">$0</strong>
         </div>
         <div class="profile-stat-card">
           <span>Watchlist</span>
-          <strong>8</strong>
+          <strong id="statWatchlist">0</strong>
         </div>
       </section>
 
@@ -71,11 +59,11 @@
           </div>
           <div class="profile-detail-row">
             <span>Username</span>
-            <strong id="detailUsername">Guest Bidder</strong>
+            <strong id="detailUsername">--</strong>
           </div>
           <div class="profile-detail-row">
             <span>Email</span>
-            <strong id="detailEmail">Not connected</strong>
+            <strong id="detailEmail">--</strong>
           </div>
           <div class="profile-detail-row">
             <span>Member Type</span>
@@ -92,27 +80,7 @@
             <h2>Bidding Summary</h2>
             <span>Live</span>
           </div>
-          <div class="profile-bid-item">
-            <div>
-              <strong>MacBook Pro 14 M5</strong>
-              <span>Leading bid</span>
-            </div>
-            <p>$1,850</p>
-          </div>
-          <div class="profile-bid-item">
-            <div>
-              <strong>ASUS ROG Zephyrus G14</strong>
-              <span>Watching</span>
-            </div>
-            <p>$1,450</p>
-          </div>
-          <div class="profile-bid-item">
-            <div>
-              <strong>Dell XPS 13 Plus</strong>
-              <span>Outbid</span>
-            </div>
-            <p>$980</p>
-          </div>
+          <div id="biddingSummaryContainer"></div>
         </div>
 
         <div class="profile-panel profile-wide-panel">
@@ -120,29 +88,7 @@
             <h2>Recent Activity</h2>
             <span>Today</span>
           </div>
-          <div class="profile-activity-list">
-            <div class="profile-activity">
-              <i class="bi bi-lightning-charge"></i>
-              <div>
-                <strong>Bid placed on MacBook Pro 14 M5</strong>
-                <span>Your latest bid is currently leading.</span>
-              </div>
-            </div>
-            <div class="profile-activity">
-              <i class="bi bi-eye"></i>
-              <div>
-                <strong>Added Surface Laptop 7 to watchlist</strong>
-                <span>You will see updates when the auction changes.</span>
-              </div>
-            </div>
-            <div class="profile-activity">
-              <i class="bi bi-trophy"></i>
-              <div>
-                <strong>Won Acer Swift Go 14 auction</strong>
-                <span>Seller contact is pending confirmation.</span>
-              </div>
-            </div>
-          </div>
+          <div class="profile-activity-list" id="activityListContainer"></div>
         </div>
       </section>
     </main>
@@ -151,35 +97,82 @@
       document.addEventListener("DOMContentLoaded", () => {
         const loggedInUser = localStorage.getItem("loggedInUser");
         const users = JSON.parse(localStorage.getItem("usersDB")) || [];
+        
+        if (!loggedInUser) {
+          alert("Access denied. Please log in first.");
+          window.location.href = "index.html"; 
+          return;
+        }
+
         const user = users.find(
-          (item) =>
-            loggedInUser &&
-            item.username.toLowerCase() === loggedInUser.toLowerCase(),
+          (item) => item.username && item.username.toLowerCase() === loggedInUser.toLowerCase()
         );
 
-        const displayName = loggedInUser || "Guest Bidder";
-        const email = user?.email || "Not connected";
+        const displayName = user ? user.username : loggedInUser;
+        const email = user?.email || "No email connected";
+        
         const initials = displayName
           .split(" ")
-          .map((part) => part[0])
+          .map(p => p[0])
           .join("")
           .slice(0, 2)
           .toUpperCase();
 
         document.getElementById("profileName").innerText = displayName;
         document.getElementById("detailUsername").innerText = displayName;
-        document.getElementById("profileAvatar").innerText = initials || "MS";
-        document.getElementById("profileEmail").innerText = user
-          ? email
-          : "Login to connect your account details.";
+        document.getElementById("profileAvatar").innerText = initials || "??";
+        document.getElementById("profileEmail").innerText = email;
         document.getElementById("detailEmail").innerText = email;
 
-        document
-          .getElementById("profileLogout")
-          .addEventListener("click", () => {
-            localStorage.removeItem("loggedInUser");
-            window.location.href = "index.html";
+        document.getElementById("statActive").innerText = user?.stats?.activeBids ?? 0;
+        document.getElementById("statWon").innerText = user?.stats?.wonItems ?? 0;
+        document.getElementById("statSpent").innerText = user?.stats?.totalSpent ?? "$0";
+        document.getElementById("statWatchlist").innerText = user?.stats?.watchlist ?? 0;
+
+        const bidContainer = document.getElementById("biddingSummaryContainer");
+        bidContainer.innerHTML = ""; 
+
+        if (user?.bids && user.bids.length > 0) {
+          user.bids.forEach(bid => {
+            const div = document.createElement("div");
+            div.className = "profile-bid-item";
+            div.innerHTML = `
+              <div>
+                <strong>${bid.item}</strong>
+                <span>${bid.status}</span>
+              </div>
+              <p>${bid.price}</p>
+            `;
+            bidContainer.appendChild(div);
           });
+        } else {
+          bidContainer.innerHTML = `<p class="text-muted text-center my-4">You don't have any active bids yet.</p>`;
+        }
+
+        const activityContainer = document.getElementById("activityListContainer");
+        activityContainer.innerHTML = ""; 
+
+        if (user?.activities && user.activities.length > 0) {
+          user.activities.forEach(act => {
+            const div = document.createElement("div");
+            div.className = "profile-activity";
+            div.innerHTML = `
+              <i class="bi ${act.icon || 'bi-info-circle'}"></i>
+              <div>
+                <strong>${act.title}</strong>
+                <span>${act.desc}</span>
+              </div>
+            `;
+            activityContainer.appendChild(div);
+          });
+        } else {
+          activityContainer.innerHTML = `<p class="text-muted text-center my-4">No recent activity found.</p>`;
+        }
+
+        document.getElementById("profileLogout").addEventListener("click", () => {
+          localStorage.removeItem("loggedInUser");
+          window.location.href = "index.html";
+        });
       });
     </script>
   </body>
