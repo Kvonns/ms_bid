@@ -27,7 +27,7 @@
       <div class="logo">Ms_BidD</div>
       <div class="nav">
         <a href="index.html">Home</a>
-        <a href="liveBid.php">Live Bid</a>
+        <a href="liveBid.html">Live Bid</a>
         <a href="toBid.html">To Bid</a>
         <a href="profile.html" id="profileLink" style="display: none"
           >Profile</a
@@ -56,8 +56,7 @@
           </p>
           <div class="d-flex justify-content-center gap-3">
             <a
-              href="liveBid.php"
-              id="startBid"
+              href="liveBid.html"
               class="btn btn-outline-info px-4 py-2 fw-bold"
               style="border-color: aqua; color: aqua"
               >Explore Live Bids</a
@@ -66,7 +65,6 @@
               href="toBid.html"
               class="btn px-4 py-2 fw-bold"
               style="background-color: #ff6565; color: white"
-              id="startBid"
               >Start Bidding</a
             >
           </div>
@@ -312,7 +310,11 @@
                       required
                     />
                   </div>
-                  <button type="submit" class="w-100 auth-submit-btn">
+                  <button
+                    type="submit"
+                    class="w-100 auth-submit-btn"
+                    style="background-color: #ff6565; border-color: #ff6565"
+                  >
                     CREATE ACCOUNT
                   </button>
                 </form>
@@ -326,7 +328,9 @@
     <div
       class="container text-center text-muted my-5 pt-5 border-top border-secondary"
     >
-      <p class="small">&copy; 2026 Ms_BidD, Sophivon & SoMakna.</p>
+      <p class="small">
+        &copy; 2026 Ms_BidD Inc. Built with passion by a CS Innovator.
+      </p>
     </div>
 
     <script>
@@ -358,100 +362,59 @@
           if (localStorage.getItem("loggedInUser")) {
             e.preventDefault();
             localStorage.removeItem("loggedInUser");
-            localStorage.removeItem("loggedInEmail");
             alert("Logged out successfully!");
             window.location.reload();
           }
         });
-        signupForm.addEventListener("submit", async (e) => {
+        signupForm.addEventListener("submit", (e) => {
           e.preventDefault();
           const username = document.getElementById("signupUser").value.trim();
           const email = document.getElementById("signupEmail").value.trim();
           const password = document.getElementById("signupPass").value;
 
-          let formData = new FormData();
-          formData.append("action", "insertUser");
-          formData.append("username", username);
-          formData.append("email", email);
-          formData.append("password", password);
-
-          try {
-            const response = await fetch("server.php", {
-              method: "POST",
-              body: formData,
-            });
-            const result = await response.json();
-
-            if (!result.success) {
-              alert(result.message || "Account could not be created.");
-              return;
-            }
-
-            const db = getUsersDB();
-            const withoutDuplicate = db.filter(
-              (user) => user.username.toLowerCase() !== username.toLowerCase(),
-            );
-            withoutDuplicate.push({ username, email });
-            localStorage.setItem("usersDB", JSON.stringify(withoutDuplicate));
-
-            alert("Account created successfully! Switching to Login tab.");
-            signupForm.reset();
-            const loginTabTrigger = new bootstrap.Tab(
-              document.getElementById("login-tab"),
-            );
-            loginTabTrigger.show();
-          } catch (error) {
-            console.error("Signup error:", error);
-            alert("Could not connect to the server. Please try again.");
+          const db = getUsersDB();
+          if (
+            db.some(
+              (user) => user.username.toLowerCase() === username.toLowerCase(),
+            )
+          ) {
+            alert("Error: Username is already taken!");
+            return;
           }
+          db.push({ username, email, password });
+          localStorage.setItem("usersDB", JSON.stringify(db));
+
+          alert("Account created successfully! Switching to Login tab.");
+          signupForm.reset();
+          const loginTabTrigger = new bootstrap.Tab(
+            document.getElementById("login-tab"),
+          );
+          loginTabTrigger.show();
         });
-        //login
-        loginForm.addEventListener("submit", async (e) => {
+        loginForm.addEventListener("submit", (e) => {
           e.preventDefault();
           const username = document.getElementById("loginUser").value.trim();
           const password = document.getElementById("loginPass").value;
-          let formData = new FormData();
-          formData.append("action", "loginUser");
-          formData.append("username", username);
-          formData.append("password", password);
 
-          try {
-            const response = await fetch("server.php", {
-              method: "POST",
-              body: formData,
-            });
-            const data = await response.json();
+          const db = getUsersDB();
+          const userMatch = db.find(
+            (user) =>
+              user.username.toLowerCase() === username.toLowerCase() &&
+              user.password === password,
+          );
 
-            if (data.success) {
-              const loggedInUsername = data.username || username;
-              localStorage.setItem("loggedInUser", loggedInUsername);
-              localStorage.setItem("loggedInEmail", data.email || "");
+          if (userMatch) {
+            localStorage.setItem("loggedInUser", userMatch.username);
+            alert(`Welcome back, ${userMatch.username}!`);
+            const modalEl = document.getElementById("authModal");
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            modalInstance.hide();
 
-              const db = getUsersDB();
-              const withoutDuplicate = db.filter(
-                (user) =>
-                  user.username.toLowerCase() !==
-                  loggedInUsername.toLowerCase(),
-              );
-              withoutDuplicate.push({
-                username: loggedInUsername,
-                email: data.email || "",
-              });
-              localStorage.setItem("usersDB", JSON.stringify(withoutDuplicate));
-
-              alert(`Welcome back, ${loggedInUsername}!`);
-              const modalEl = document.getElementById("authModal");
-              const modalInstance = bootstrap.Modal.getInstance(modalEl);
-              modalInstance.hide();
-
-              updateUI();
-              return;
-            }
-
-            alert(data.message || "Invalid username or password.");
-          } catch (error) {
-            console.error("Login error:", error);
-            alert("Could not connect to the server. Please try again.");
+            updateUI();
+          } else {
+            alert(
+              "Invalid username or password credentials. Please try again.",
+            );
           }
         });
         updateUI();
