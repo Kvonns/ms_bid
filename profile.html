@@ -47,19 +47,15 @@
       <section class="profile-stats">
         <div class="profile-stat-card">
           <span>Active Bids</span>
-          <strong>3</strong>
+          <strong id="activeBidsCount">0</strong>
         </div>
         <div class="profile-stat-card">
           <span>Won Items</span>
-          <strong>5</strong>
+          <strong id="wonItemsCount">0</strong>
         </div>
         <div class="profile-stat-card">
           <span>Total Spent</span>
-          <strong>$8.2K</strong>
-        </div>
-        <div class="profile-stat-card">
-          <span>Watchlist</span>
-          <strong>8</strong>
+          <strong id="totalSpentAmount">$0</strong>
         </div>
       </section>
 
@@ -79,76 +75,30 @@
           </div>
           <div class="profile-detail-row">
             <span>Member Type</span>
-            <strong>Laptop Bidder</strong>
+            <strong id="detailMemberType">Guest Bidder</strong>
           </div>
           <div class="profile-detail-row">
             <span>Favorite Category</span>
-            <strong>Premium Laptops</strong>
+            <strong id="detailFavoriteCategory">Premium Laptops</strong>
           </div>
         </div>
 
         <div class="profile-panel">
           <div class="profile-panel-header">
             <h2>Bidding Summary</h2>
-            <span>Live</span>
+            <span id="summaryStatus">Live</span>
           </div>
-          <div class="profile-bid-item">
-            <div>
-              <strong>MacBook Pro 14 M5</strong>
-              <span>Leading bid</span>
-            </div>
-            <p>$1,850</p>
-          </div>
-          <div class="profile-bid-item">
-            <div>
-              <strong>ASUS ROG Zephyrus G14</strong>
-              <span>Watching</span>
-            </div>
-            <p>$1,450</p>
-          </div>
-          <div class="profile-bid-item">
-            <div>
-              <strong>Dell XPS 13 Plus</strong>
-              <span>Outbid</span>
-            </div>
-            <p>$980</p>
-          </div>
-        </div>
-
-        <div class="profile-panel profile-wide-panel">
-          <div class="profile-panel-header">
-            <h2>Recent Activity</h2>
-            <span>Today</span>
-          </div>
-          <div class="profile-activity-list">
-            <div class="profile-activity">
-              <i class="bi bi-lightning-charge"></i>
-              <div>
-                <strong>Bid placed on MacBook Pro 14 M5</strong>
-                <span>Your latest bid is currently leading.</span>
-              </div>
-            </div>
-            <div class="profile-activity">
-              <i class="bi bi-eye"></i>
-              <div>
-                <strong>Added Surface Laptop 7 to watchlist</strong>
-                <span>You will see updates when the auction changes.</span>
-              </div>
-            </div>
-            <div class="profile-activity">
-              <i class="bi bi-trophy"></i>
-              <div>
-                <strong>Won Acer Swift Go 14 auction</strong>
-                <span>Seller contact is pending confirmation.</span>
-              </div>
-            </div>
-          </div>
+          <div id="biddingSummaryList"></div>
         </div>
       </section>
     </main>
 
-    <script>
+    <script type="module">
+      import data from "./data.js";
+
       document.addEventListener("DOMContentLoaded", () => {
+        const laptops = JSON.parse(data);
+        const laptopById = new Map(laptops.map((laptop) => [laptop.id, laptop]));
         const loggedInUser = localStorage.getItem("loggedInUser");
         const users = JSON.parse(localStorage.getItem("usersDB")) || [];
         const user = users.find(
@@ -158,7 +108,8 @@
         );
 
         const displayName = loggedInUser || "Guest Bidder";
-        const email = user?.email || "Not connected";
+        const email =
+          user?.email || localStorage.getItem("loggedInEmail") || "Not connected";
         const initials = displayName
           .split(" ")
           .map((part) => part[0])
@@ -173,13 +124,125 @@
           ? email
           : "Login to connect your account details.";
         document.getElementById("detailEmail").innerText = email;
+        document.getElementById("detailMemberType").innerText = loggedInUser
+          ? "Laptop Bidder"
+          : "Guest Bidder";
+
+        function formatMoney(value) {
+          let amount = Number(value) || 0;
+
+          if (amount >= 1000) {
+            let shortAmount = amount / 1000;
+            return `$${shortAmount.toFixed(shortAmount % 1 === 0 ? 0 : 1)}K`;
+          }
+
+          return `$${amount.toLocaleString()}`;
+        }
+
+        function resetProfileStats() {
+          document.getElementById("activeBidsCount").innerText = "0";
+          document.getElementById("wonItemsCount").innerText = "0";
+          document.getElementById("totalSpentAmount").innerText = "$0";
+        }
+
+        function renderEmptySummary(message) {
+          document.getElementById("biddingSummaryList").innerHTML = `
+            <div class="profile-empty-state">${message}</div>
+          `;
+        }
+
+        function escapeHtml(value) {
+          return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+        }
+
+        function renderSummary(items) {
+          const summaryList = document.getElementById("biddingSummaryList");
+
+          if (!items.length) {
+            renderEmptySummary("No victories yet.");
+            return;
+          }
+
+          summaryList.innerHTML = items
+            .map((item) => {
+              const laptop = laptopById.get(item.laptop_id);
+              const name = laptop ? laptop.name : item.laptop_id;
+              const amount = Number(item.amount || item.user_bid || 0);
+
+              return `
+                <div class="profile-bid-item">
+                  <div>
+                    <strong>${escapeHtml(name)}</strong>
+                    <span class="victory">${escapeHtml(item.status)}</span>
+                  </div>
+                  <p>$${amount.toLocaleString()}</p>
+                </div>
+              `;
+            })
+            .join("");
+        }
+
+        async function loadProfileData() {
+          if (!loggedInUser) {
+            resetProfileStats();
+            renderEmptySummary("Login to see your live bids.");
+            document.getElementById("summaryStatus").innerText = "Offline";
+            return;
+          }
+
+          try {
+            const response = await fetch(
+              `server.php?action=getProfile&username=${encodeURIComponent(loggedInUser)}`,
+              { cache: "no-store" },
+            );
+            const result = await response.json();
+
+            if (!result.success) {
+              throw new Error(result.message || "Could not load profile.");
+            }
+
+            const serverUser = result.user || {};
+            const stats = result.stats || {};
+            const profileUsername = serverUser.username || displayName;
+            const profileEmail = serverUser.email || email;
+
+            document.getElementById("profileName").innerText = profileUsername;
+            document.getElementById("detailUsername").innerText = profileUsername;
+            document.getElementById("profileEmail").innerText = profileEmail;
+            document.getElementById("detailEmail").innerText = profileEmail;
+            document.getElementById("activeBidsCount").innerText =
+              stats.active_bids || 0;
+            document.getElementById("wonItemsCount").innerText =
+              stats.won_items || 0;
+            document.getElementById("totalSpentAmount").innerText =
+              formatMoney(stats.total_spent);
+            document.getElementById("detailMemberType").innerText =
+              "Laptop Bidder";
+            document.getElementById("summaryStatus").innerText = "Won";
+
+            renderSummary(result.bidding_summary || []);
+          } catch (error) {
+            console.error("Profile load error:", error);
+            resetProfileStats();
+            renderEmptySummary("Profile data could not load.");
+            document.getElementById("summaryStatus").innerText = "Error";
+          }
+        }
 
         document
           .getElementById("profileLogout")
           .addEventListener("click", () => {
             localStorage.removeItem("loggedInUser");
+            localStorage.removeItem("loggedInEmail");
             window.location.href = "index.html";
           });
+
+        loadProfileData();
       });
     </script>
   </body>

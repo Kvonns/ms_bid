@@ -135,11 +135,23 @@ body,html{
     color: aquamarine;
 }
 
+.currentBid > div {
+    margin-bottom: 14px;
+}
+
+.currentBid > div:last-child {
+    margin-bottom: 0;
+}
+
 .currentBid h2 {
     font-weight: 700;
     border-radius: 2px;
     padding: 5px;
     background-color: #ff6565;
+}
+
+#auctionTimer h3 {
+    color: #ff6565;
 }
 
 #idk {
@@ -201,8 +213,19 @@ input[type=number] {
     background-color: rgb(98, 255, 245);
 }
 
+#forBid button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
 .prevBid {
     padding: 20px;
+}
+
+.emptyBidHistory {
+    color: rgba(240, 255, 255, 0.65);
+    border: rgb(45, 230, 169) 1px solid;
+    padding: 10px;
 }
 
 #info {
@@ -214,6 +237,35 @@ input[type=number] {
 
 #prevAmount {
     color: rgb(45, 230, 169);
+}
+
+.winner-modal {
+    background-color: rgb(11, 29, 55) !important;
+    border: 2px solid #ff6565 !important;
+    border-radius: 16px !important;
+    color: azure !important;
+}
+
+.winner-modal .modal-header {
+    border-bottom: 1px solid rgba(255, 101, 101, 0.5);
+}
+
+.winner-modal .modal-title,
+.winner-modal h2 {
+    color: aquamarine;
+    font-weight: 900;
+}
+
+.winner-label {
+    color: #ff6565;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.winner-amount {
+    color: rgb(45, 230, 169);
+    font-size: 28px;
+    font-weight: 900;
 }
 
 .biddingCard {
@@ -428,7 +480,7 @@ input[type=number] {
 
 .profile-stats {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
     margin: 22px 0;
 }
@@ -526,6 +578,26 @@ input[type=number] {
     font-weight: 900;
     margin: 0;
     white-space: nowrap;
+}
+
+.profile-bid-item .leading {
+    color: rgb(45, 230, 169);
+}
+
+.profile-bid-item .victory {
+    color: rgb(45, 230, 169);
+}
+
+.profile-bid-item .outbid {
+    color: #ff6565;
+}
+
+.profile-empty-state {
+    color: rgba(240, 255, 255, 0.66);
+    background-color: rgb(9, 20, 35);
+    border: 1px solid rgba(45, 230, 169, 0.35);
+    border-radius: 12px;
+    padding: 16px;
 }
 
 .profile-activity-list {

@@ -358,6 +358,7 @@
           if (localStorage.getItem("loggedInUser")) {
             e.preventDefault();
             localStorage.removeItem("loggedInUser");
+            localStorage.removeItem("loggedInEmail");
             alert("Logged out successfully!");
             window.location.reload();
           }
@@ -368,35 +369,41 @@
           const email = document.getElementById("signupEmail").value.trim();
           const password = document.getElementById("signupPass").value;
 
-          const db = getUsersDB();
-          if (
-            db.some(
-              (user) => user.username.toLowerCase() === username.toLowerCase(),
-            )
-          ) {
-            alert("Error: Username is already taken!");
-            return;
-          }
-          db.push({ username, email, password });
-          localStorage.setItem("usersDB", JSON.stringify(db));
-
-          alert("Account created successfully! Switching to Login tab.");
-          signupForm.reset();
-          const loginTabTrigger = new bootstrap.Tab(
-            document.getElementById("login-tab"),
-          );
           let formData = new FormData();
           formData.append("action", "insertUser");
           formData.append("username", username);
           formData.append("email", email);
           formData.append("password", password);
-          const response = await fetch("server.php", {
-            method: "POST",
-            body: formData,
-          });
-          const result = await response.json();
-          console.log(result);
-          loginTabTrigger.show();
+
+          try {
+            const response = await fetch("server.php", {
+              method: "POST",
+              body: formData,
+            });
+            const result = await response.json();
+
+            if (!result.success) {
+              alert(result.message || "Account could not be created.");
+              return;
+            }
+
+            const db = getUsersDB();
+            const withoutDuplicate = db.filter(
+              (user) => user.username.toLowerCase() !== username.toLowerCase(),
+            );
+            withoutDuplicate.push({ username, email });
+            localStorage.setItem("usersDB", JSON.stringify(withoutDuplicate));
+
+            alert("Account created successfully! Switching to Login tab.");
+            signupForm.reset();
+            const loginTabTrigger = new bootstrap.Tab(
+              document.getElementById("login-tab"),
+            );
+            loginTabTrigger.show();
+          } catch (error) {
+            console.error("Signup error:", error);
+            alert("Could not connect to the server. Please try again.");
+          }
         });
         //login
         loginForm.addEventListener("submit", async (e) => {
@@ -407,46 +414,45 @@
           formData.append("action", "loginUser");
           formData.append("username", username);
           formData.append("password", password);
-          const response = await fetch("server.php", {
-            method: "POST",
-            body: formData,
-          });
-          fetch("server.php", {
-            method: "POST", // or 'GET' depending on your PHP setup
-            body: formData, // if you are sending login details
-          })
-            .then((response) => {
-              // 2. Convert the incoming text stream into a JavaScript object
-              return response.json();
-            })
-            .then((data) => {
-              // 3. You can now access 'success' and 'message' using dot notation!
-              console.log(data.success); // Outputs: true
-              console.log(data.message); // Outputs: "Login successful!"
 
-              if (data.success) {
-                localStorage.setItem("loggedInUser", userMatch.username);
-                alert(`Welcome back, ${userMatch.username}!`);
-                const modalEl = document.getElementById("authModal");
-                const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                modalInstance.hide();
-
-                updateUI();
-              } else {
-                alert(
-                  "Invalid username or password credentials. Please try again.",
-                );
-              }
-            })
-            .catch((error) => {
-              console.error("Error reading the JSON data:", error);
+          try {
+            const response = await fetch("server.php", {
+              method: "POST",
+              body: formData,
             });
-          const db = getUsersDB();
-          const userMatch = db.find(
-            (user) =>
-              user.username.toLowerCase() === username.toLowerCase() &&
-              user.password === password,
-          );
+            const data = await response.json();
+
+            if (data.success) {
+              const loggedInUsername = data.username || username;
+              localStorage.setItem("loggedInUser", loggedInUsername);
+              localStorage.setItem("loggedInEmail", data.email || "");
+
+              const db = getUsersDB();
+              const withoutDuplicate = db.filter(
+                (user) =>
+                  user.username.toLowerCase() !==
+                  loggedInUsername.toLowerCase(),
+              );
+              withoutDuplicate.push({
+                username: loggedInUsername,
+                email: data.email || "",
+              });
+              localStorage.setItem("usersDB", JSON.stringify(withoutDuplicate));
+
+              alert(`Welcome back, ${loggedInUsername}!`);
+              const modalEl = document.getElementById("authModal");
+              const modalInstance = bootstrap.Modal.getInstance(modalEl);
+              modalInstance.hide();
+
+              updateUI();
+              return;
+            }
+
+            alert(data.message || "Invalid username or password.");
+          } catch (error) {
+            console.error("Login error:", error);
+            alert("Could not connect to the server. Please try again.");
+          }
         });
         updateUI();
         closebtn.addEventListener("click", function () {

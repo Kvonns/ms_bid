@@ -1,30 +1,173 @@
-  <?php
+<?php
   include 'db.php';
+
+  const AUCTION_DURATION_SECONDS = 30;
+
+  function sendJson($payload)
+  {
+    header('Content-Type: application/json');
+    echo json_encode($payload);
+    exit;
+  }
+
+  function createAuctionStateTable($pdo)
+  {
+    $pdo->exec("
+      CREATE TABLE IF NOT EXISTS auction_state (
+        laptop_id TEXT PRIMARY KEY,
+        round_started_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    ");
+  }
+
+  function ensureAuctionWinnersTable($pdo)
+  {
+    $pdo->exec("
+      CREATE TABLE IF NOT EXISTS auction_winners (
+        id BIGSERIAL PRIMARY KEY,
+        laptop_id TEXT NOT NULL,
+        username TEXT NOT NULL,
+        amount NUMERIC NOT NULL,
+        round_started_at TIMESTAMPTZ NOT NULL,
+        won_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        UNIQUE (laptop_id, round_started_at)
+      )
+    ");
+  }
+
+  function getWinningBid($pdo, $laptop_id)
+  {
+    $winnerQuery = $pdo->prepare("
+      SELECT username, amount
+      FROM bids
+      WHERE laptop_id = :laptop_id
+      ORDER BY amount DESC, created_at ASC
+      LIMIT 1
+    ");
+    $winnerQuery->execute([':laptop_id' => $laptop_id]);
+    return $winnerQuery->fetch(PDO::FETCH_ASSOC) ?: null;
+  }
+
+  function readAuctionState($pdo, $laptop_id)
+  {
+    $insertState = $pdo->prepare("
+      INSERT INTO auction_state (laptop_id, round_started_at)
+      VALUES (:laptop_id, NOW())
+      ON CONFLICT (laptop_id) DO NOTHING
+    ");
+    $insertState->execute([':laptop_id' => $laptop_id]);
+
+    $stateQuery = $pdo->prepare("
+      SELECT round_started_at, EXTRACT(EPOCH FROM (NOW() - round_started_at)) AS elapsed_seconds
+      FROM auction_state
+      WHERE laptop_id = :laptop_id
+    ");
+    $stateQuery->execute([':laptop_id' => $laptop_id]);
+    $state = $stateQuery->fetch(PDO::FETCH_ASSOC);
+
+    $elapsedSeconds = $state ? (int) floor((float) $state['elapsed_seconds']) : 0;
+    $timeRemaining = max(0, AUCTION_DURATION_SECONDS - $elapsedSeconds);
+
+    return [
+      'round_started_at' => $state ? $state['round_started_at'] : null,
+      'time_remaining' => $timeRemaining,
+      'is_expired' => $timeRemaining <= 0
+    ];
+  }
+
+  function getAuctionState($pdo, $laptop_id)
+  {
+    try {
+      return readAuctionState($pdo, $laptop_id);
+    } catch (PDOException $error) {
+      if ($error->getCode() !== '42P01') {
+        throw $error;
+      }
+
+      createAuctionStateTable($pdo);
+      return readAuctionState($pdo, $laptop_id);
+    }
+  }
+
+  function getAuctionPayload($pdo, $laptop_id)
+  {
+    $state = getAuctionState($pdo, $laptop_id);
+
+    $historyQuery = $pdo->prepare("
+      SELECT username, amount, created_at
+      FROM bids
+      WHERE laptop_id = :laptop_id
+      ORDER BY created_at DESC
+      LIMIT 10
+    ");
+    $historyQuery->execute([':laptop_id' => $laptop_id]);
+    $bids = $historyQuery->fetchAll(PDO::FETCH_ASSOC);
+
+    $statsQuery = $pdo->prepare("
+      SELECT COALESCE(MAX(amount), 0) AS current_bid, COUNT(*) AS total_bids
+      FROM bids
+      WHERE laptop_id = :laptop_id
+    ");
+    $statsQuery->execute([':laptop_id' => $laptop_id]);
+    $stats = $statsQuery->fetch(PDO::FETCH_ASSOC);
+
+    $winner = null;
+    if ($state['is_expired']) {
+      $winner = getWinningBid($pdo, $laptop_id);
+    }
+
+    return [
+      'status' => 'ok',
+      'bids' => $bids,
+      'current_bid' => (float) ($stats['current_bid'] ?? 0),
+      'total_bids' => (int) ($stats['total_bids'] ?? 0),
+      'duration_seconds' => AUCTION_DURATION_SECONDS,
+      'time_remaining' => $state['time_remaining'],
+      'is_expired' => $state['is_expired'],
+      'round_started_at' => $state['round_started_at'],
+      'winner' => $winner
+    ];
+  }
 
   if (isset($_GET['action']) && $_GET['action'] == 'get_live_feed') {
     try {
       $laptop_id = isset($_GET['laptop_id']) ? trim($_GET['laptop_id']) : 0;
-      $prepData = $pdo->prepare("SELECT username, amount, created_at FROM bids WHERE laptop_id = :laptop_id 
-      ORDER BY created_at DESC LIMIT 10");
-      $prepData->execute([
-        ':laptop_id' => $laptop_id
-      ]);
-      $allBid = $prepData->fetchAll(PDO::FETCH_ASSOC);
-      echo json_encode($allBid);
+      sendJson(getAuctionPayload($pdo, $laptop_id));
     } catch (PDOException $ee) {
-      echo json_encode(["error" => $ee->getMessage()]);
+      sendJson(["status" => "error", "message" => $ee->getMessage()]);
     }
-    exit;
   }
+
   if (isset($_POST['action']) && $_POST['action'] == 'place_bid') {
     try {
       $username = isset($_POST['username']) ? trim($_POST['username']) : 'Guest';
       $amount = isset($_POST['amount']) ? floatval($_POST['amount']) : 0;
       $laptop_id = isset($_POST['laptop_id']) ? trim($_POST['laptop_id']) : null;
-      if ($amount <= 0) {
-        echo json_encode(["status" => "error", "message" => "Invalid bid amount."]);
-        exit;
+      $minIncrement = isset($_POST['min_increment']) ? floatval($_POST['min_increment']) : 0;
+
+      if ($amount <= 0 || !$laptop_id) {
+        sendJson(["status" => "error", "message" => "Invalid bid amount."]);
       }
+
+      $state = getAuctionState($pdo, $laptop_id);
+      if ($state['is_expired']) {
+        $payload = getAuctionPayload($pdo, $laptop_id);
+        $payload['status'] = 'ended';
+        $payload['message'] = 'This bidding round has ended.';
+        sendJson($payload);
+      }
+
+      $currentQuery = $pdo->prepare("SELECT COALESCE(MAX(amount), 0) AS current_bid FROM bids WHERE laptop_id = :laptop_id");
+      $currentQuery->execute([':laptop_id' => $laptop_id]);
+      $currentBid = (float) $currentQuery->fetchColumn();
+
+      if ($amount < ($currentBid + $minIncrement)) {
+        sendJson([
+          "status" => "error",
+          "message" => "Bid must be at least $" . number_format($currentBid + $minIncrement) . "."
+        ]);
+      }
+
       $prepData = $pdo->prepare("INSERT INTO bids (username, amount, laptop_id) VALUES (:username, :amount, :laptop_id)");
 
       $prepData->execute([
@@ -33,14 +176,70 @@
         ':laptop_id' => $laptop_id
       ]);
 
-
-      $all_bids = $prepData->fetchAll(PDO::FETCH_ASSOC);
-
-      echo json_encode($all_bids);
-      exit;
+      sendJson(getAuctionPayload($pdo, $laptop_id));
     } catch (PDOException $e) {
-      echo json_encode(["status" => "error", "message" => $e->getMessage()]);
-      exit;
+      sendJson(["status" => "error", "message" => $e->getMessage()]);
+    }
+  }
+
+  if (isset($_POST['action']) && $_POST['action'] == 'reset_auction') {
+    try {
+      $laptop_id = isset($_POST['laptop_id']) ? trim($_POST['laptop_id']) : null;
+      $round_started_at = isset($_POST['round_started_at']) ? trim($_POST['round_started_at']) : null;
+
+      if (!$laptop_id) {
+        sendJson(["status" => "error", "message" => "Missing auction item."]);
+      }
+
+      $state = getAuctionState($pdo, $laptop_id);
+
+      if (!$state['is_expired']) {
+        $payload = getAuctionPayload($pdo, $laptop_id);
+        $payload['status'] = 'running';
+        sendJson($payload);
+      }
+
+      if ($round_started_at && $state['round_started_at'] !== $round_started_at) {
+        $payload = getAuctionPayload($pdo, $laptop_id);
+        $payload['status'] = 'already_reset';
+        sendJson($payload);
+      }
+
+      ensureAuctionWinnersTable($pdo);
+      $winner = getWinningBid($pdo, $laptop_id);
+
+      $pdo->beginTransaction();
+
+      if ($winner) {
+        $saveWinner = $pdo->prepare("
+          INSERT INTO auction_winners (laptop_id, username, amount, round_started_at)
+          VALUES (:laptop_id, :username, :amount, :round_started_at)
+          ON CONFLICT (laptop_id, round_started_at) DO NOTHING
+        ");
+        $saveWinner->execute([
+          ':laptop_id' => $laptop_id,
+          ':username' => $winner['username'],
+          ':amount' => $winner['amount'],
+          ':round_started_at' => $state['round_started_at']
+        ]);
+      }
+
+      $deleteBids = $pdo->prepare("DELETE FROM bids WHERE laptop_id = :laptop_id");
+      $deleteBids->execute([':laptop_id' => $laptop_id]);
+
+      $resetState = $pdo->prepare("UPDATE auction_state SET round_started_at = NOW() WHERE laptop_id = :laptop_id");
+      $resetState->execute([':laptop_id' => $laptop_id]);
+
+      $pdo->commit();
+
+      $payload = getAuctionPayload($pdo, $laptop_id);
+      $payload['status'] = 'reset';
+      sendJson($payload);
+    } catch (PDOException $e) {
+      if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+      }
+      sendJson(["status" => "error", "message" => $e->getMessage()]);
     }
   }
 
@@ -99,6 +298,7 @@
               <div class="detailedInfo" id="detailedInfos"></div>
 
               <div class="currentBid" id="currentBid">
+                <div id="auctionTimer"></div>
                 <div id="currentBID"></div>
                 <div id="totalBidder"></div>
               </div>
@@ -124,6 +324,16 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="winnerModal" tabindex="-1" aria-labelledby="winnerModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content winner-modal">
+          <div class="modal-header">
+            <h5 class="modal-title" id="winnerModalLabel">Auction winner</h5>
+          </div>
+          <div class="modal-body" id="winnerModalBody"></div>
         </div>
       </div>
     </div>
