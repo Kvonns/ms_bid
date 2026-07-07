@@ -240,6 +240,8 @@ input[type=number] {
 }
 
 .winner-modal {
+    --bs-modal-bg: rgb(11, 29, 55) !important;
+    --bs-modal-color: azure !important;
     background-color: rgb(11, 29, 55) !important;
     border: 2px solid #ff6565 !important;
     border-radius: 16px !important;
