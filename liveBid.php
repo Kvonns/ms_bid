@@ -1,7 +1,7 @@
 <?php
   include 'db.php';
 
-  const AUCTION_DURATION_SECONDS = 30;
+  const AUCTION_DURATION_SECONDS = 100;
 
   function sendJson($payload)
   {
