@@ -36,7 +36,7 @@ const laptop = [
     bidderCount: 15,
     endsIn: "1h 42m",
     sellerName: "TechVault",
-    img: "https://i.pinimg.com/1200x/e4/10/47/e41047d60f38f33fda75fd747b949f2f.jpg",
+    img: "https://i.pinimg.com/736x/19/59/5d/19595dede86ed3a1136a698fb39b4333.jpg",
   },
   {
     id: "asus-301",
@@ -62,7 +62,7 @@ const laptop = [
     bidderCount: 10,
     endsIn: "6h 20m",
     sellerName: "OfficeGear",
-    img: "https://images.unsplash.com/photo-1484788984921-03950022c9ef?auto=format&fit=crop&w=900&q=80",
+    img: "https://i.pinimg.com/1200x/0b/1b/17/0b1b1704d37b7fb81b59c9b6873f4a74.jpg",
   },
   {
     id: "hp-501",
@@ -75,7 +75,7 @@ const laptop = [
     bidderCount: 7,
     endsIn: "8h 11m",
     sellerName: "LaptopLane",
-    img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80",
+    img: "https://i.pinimg.com/1200x/c1/78/08/c178087602aba862e587ff536d7e375d.jpg",
   },
   {
     id: "surface-601",
@@ -88,7 +88,7 @@ const laptop = [
     bidderCount: 9,
     endsIn: "3h 33m",
     sellerName: "MetroTech",
-    img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80",
+    img: "https://i.pinimg.com/1200x/e0/cc/7a/e0cc7a67c3bcce71935a44fc3700ca81.jpg",
   },
   {
     id: "acer-701",
@@ -101,7 +101,7 @@ const laptop = [
     bidderCount: 6,
     endsIn: "11h 08m",
     sellerName: "MSBIDD",
-    img: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=900&q=80",
+    img: "https://i.pinimg.com/1200x/57/ea/f5/57eaf545ac4913fd7a390e59649a84e1.jpg",
   },
 ];
 
