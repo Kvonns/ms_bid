@@ -3,7 +3,7 @@ import data from "./data.js";
 let storedLaptop = JSON.parse(localStorage.getItem("selectedLaptop"));
 let laptopData = storedLaptop || JSON.parse(data)[0];
 
-const AUCTION_DURATION_SECONDS = 30;
+const AUCTION_DURATION_SECONDS = 100;
 const WINNER_POPUP_MS = 5000;
 
 const button = document.getElementById("btnBid");
