@@ -34,7 +34,7 @@ let resetTimeout = null;
 let isResetting = false;
 
 infoProd.innerHTML = `
-  <h2 class="infoName">${laptopData.id}</h2>
+  <h2 class="infoName">${laptopData.name}</h2>
   <p class="infoDes">${laptopData.description.join(" | ")}</p>
 `;
 
