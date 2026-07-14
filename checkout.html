@@ -48,14 +48,9 @@
             <h4 class="mb-4" style="color: aquamarine">Shipping Address</h4>
             <form>
               <div class="row g-3">
-                <div class="col-sm-6">
-                  <label for="firstName" class="form-label text-light-50">First name</label>
-                  <input type="text" class="form-control" id="firstName" style="background-color: rgb(9, 20, 35); border: 1px solid #ff6565; color: azure;" required>
-                </div>
-
-                <div class="col-sm-6">
-                  <label for="lastName" class="form-label text-light-50">Last name</label>
-                  <input type="text" class="form-control" id="lastName" style="background-color: rgb(9, 20, 35); border: 1px solid #ff6565; color: azure;" required>
+                <div class="col-12">
+                  <label for="name" class="form-label text-light-50">Name</label>
+                  <input type="text" class="form-control" id="name" style="background-color: rgb(9, 20, 35); border: 1px solid #ff6565; color: azure;" required>
                 </div>
 
                 <div class="col-12">
@@ -137,9 +132,7 @@
       } else {
           // Autofill name
           if (loggedInUser.toLowerCase() !== 'guest') {
-              const parts = loggedInUser.split(' ');
-              document.getElementById('firstName').value = parts[0] || '';
-              document.getElementById('lastName').value = parts.slice(1).join(' ') || '';
+              document.getElementById('name').value = loggedInUser;
           }
           
           const laptops = JSON.parse(data);
@@ -148,6 +141,9 @@
             .then(res => res.json())
             .then(res => {
                 if(res.success) {
+                    if (loggedInUser.toLowerCase() !== 'guest' && res.user && res.user.email) {
+                        document.getElementById('email').value = res.user.email;
+                    }
                     const unpaidItems = res.bidding_summary.filter(item => item.status === 'Won');
                     
                     if (unpaidItems.length === 0) {
