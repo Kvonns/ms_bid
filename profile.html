@@ -28,6 +28,7 @@
         <a href="liveBid.php">Live Bid</a>
         <a href="toBid.html">To Bid</a>
         <a href="profile.html">Profile</a>
+        <a href="checkout.html">Checkout</a>
       </div>
     </div>
 
@@ -160,6 +161,17 @@
             .replace(/'/g, "&#039;");
         }
 
+        function statusBadge(status) {
+          const map = {
+            'Won':       { bg: 'rgba(0,229,192,.15)',   color: '#00e5c0' },
+            'Purchased': { bg: 'rgba(167,139,250,.15)', color: '#a78bfa' },
+            'Shipped':   { bg: 'rgba(251,191,36,.15)',  color: '#fbbf24' },
+            'Delivered': { bg: 'rgba(45,230,169,.2)',   color: '#2de6a9' },
+          };
+          const s = map[status] || { bg: 'rgba(255,255,255,.1)', color: '#aaa' };
+          return `<span style="background:${s.bg};color:${s.color};padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;text-transform:uppercase">${escapeHtml(status)}</span>`;
+        }
+
         function renderSummary(items) {
           const summaryList = document.getElementById("biddingSummaryList");
 
@@ -178,7 +190,7 @@
                 <div class="profile-bid-item">
                   <div>
                     <strong>${escapeHtml(name)}</strong>
-                    <span class="victory">${escapeHtml(item.status)}</span>
+                    ${statusBadge(item.status)}
                   </div>
                   <p>$${amount.toLocaleString()}</p>
                 </div>

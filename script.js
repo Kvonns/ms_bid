@@ -3,7 +3,7 @@ import data from "./data.js";
 let storedLaptop = JSON.parse(localStorage.getItem("selectedLaptop"));
 let laptopData = storedLaptop || JSON.parse(data)[0];
 
-const AUCTION_DURATION_SECONDS = 100;
+const AUCTION_DURATION_SECONDS = 20;
 const WINNER_POPUP_MS = 5000;
 
 const button = document.getElementById("btnBid");
@@ -43,11 +43,11 @@ image.innerHTML = `
 `;
 
 detailedInfo.innerHTML = `
-  <p id="deInfoName">Product Name: ${laptopData.name}</p>
-  <p id="Condition">Condition: ${laptopData.condition}</p>
-  <p id="retailedPrice">Retailed Price: $${laptopData.retailedPriced.toLocaleString()}</p>
-  <p id="minIncrement">Minimum Increment: $${defaultMinimum}</p>
-  <p id="sellerName">Seller Name: ${laptopData.sellerName}</p>
+  <div class="info-row"><span class="info-label">Product Name</span><span class="info-value">${laptopData.name}</span></div>
+  <div class="info-row"><span class="info-label">Condition</span><span class="info-value">${laptopData.condition}</span></div>
+  <div class="info-row"><span class="info-label">Retailed Price</span><span class="info-value">$${laptopData.retailedPriced.toLocaleString()}</span></div>
+  <div class="info-row"><span class="info-label">Minimum Increment</span><span class="info-value">$${defaultMinimum}</span></div>
+  <div class="info-row"><span class="info-label">Seller</span><span class="info-value">${laptopData.sellerName}</span></div>
 `;
 
 function formatMoney(value) {
@@ -71,18 +71,30 @@ function setBidControls(disabled) {
 }
 
 function updateBidSummary() {
-  currentBid.innerHTML = `<h2>CURRENT BID</h2>
-<h3>$${formatMoney(current)}</h3>`;
-  totalBidder.innerHTML = `<h2>TOTAL BID</h2>
-<h3>${totalB} bidder${totalB === 1 ? "" : "s"}</h3>`;
+  currentBid.innerHTML = `
+    <div class="bid-stat-box">
+      <div class="stat-label">CURRENT BID</div>
+      <div class="stat-value">$${formatMoney(current)}</div>
+    </div>
+  `;
+  totalBidder.innerHTML = `
+    <div class="bid-stat-box">
+      <div class="stat-label">TOTAL BIDDERS</div>
+      <div class="stat-value">${totalB}</div>
+    </div>
+  `;
   minBid.innerHTML = `Min bid amount $${formatMoney(current + defaultMinimum)}`;
   amountInput.placeholder = current + defaultMinimum;
 }
 
 function updateTimer() {
   let remaining = secondsRemaining();
-  auctionTimer.innerHTML = `<h2>TIME LEFT</h2>
-<h3>${formatTime(remaining)}</h3>`;
+  auctionTimer.innerHTML = `
+    <div class="bid-stat-box timer-box">
+      <div class="stat-label">TIME LEFT</div>
+      <div class="stat-value timer-val">${formatTime(remaining)}</div>
+    </div>
+  `;
 
   if (remaining <= 0) {
     setBidControls(true);
@@ -125,11 +137,18 @@ function showWinner(payload) {
   winnerShownForRound = payload.round_started_at || "current-round";
 
   if (payload.winner) {
+    let extraHTML = "<p>The next bidding round will start in a few seconds.</p>";
+    if (loggedInUser && payload.winner.username === loggedInUser) {
+      extraHTML = `<p style="color: aquamarine; font-weight: bold;">You won! Please check your Checkout cart.</p>`;
+      const badge = document.getElementById('checkoutBadge');
+      if (badge) badge.style.display = 'block';
+    }
+
     winnerModalBody.innerHTML = `
       <p class="winner-label">Top 1 winner</p>
       <h2>${payload.winner.username}</h2>
       <p class="winner-amount">$${formatMoney(payload.winner.amount)}</p>
-      <p>The next bidding round will start in a few seconds.</p>
+      ${extraHTML}
     `;
   } else {
     winnerModalBody.innerHTML = `

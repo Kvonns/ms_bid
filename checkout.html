@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+    <title>Ms_BidD - Checkout</title>
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">Ms_BidD</div>
+      <div class="nav">
+        <a href="index.html">Home</a>
+        <a href="liveBid.php">Live Bid</a>
+        <a href="toBid.html">To Bid</a>
+        <a href="profile.html">Profile</a>
+        <a href="checkout.html">Checkout</a>
+      </div>
+    </div>
+
+    <!-- Checkout Content -->
+    <div class="container my-5 py-4">
+      <h2 class="display-5 fw-bold mb-5 text-center" style="color: aqua">
+        Secure Checkout
+      </h2>
+      
+      <div class="row g-5">
+        <!-- Shipping Address Form -->
+        <div class="col-md-7">
+          <div class="p-4" style="background-color: rgb(11, 29, 55); border-radius: 20px; border: 2px solid #ff6565;">
+            <h4 class="mb-4" style="color: aquamarine">Shipping Address</h4>
+            <form>
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <label for="firstName" class="form-label text-light-50">First name</label>
+                  <input type="text" class="form-control" id="firstName" style="background-color: rgb(9, 20, 35); border: 1px solid #ff6565; color: azure;" required>
+                </div>
+
+                <div class="col-sm-6">
+                  <label for="lastName" class="form-label text-light-50">Last name</label>
+                  <input type="text" class="form-control" id="lastName" style="background-color: rgb(9, 20, 35); border: 1px solid #ff6565; color: azure;" required>
+                </div>
+
+                <div class="col-12">
+                  <label for="email" class="form-label text-light-50">Email</label>
+                  <input type="email" class="form-control" id="email" placeholder="you@example.com" style="background-color: rgb(9, 20, 35); border: 1px solid #ff6565; color: azure;">
+                </div>
+
+                <div class="col-12">
+                  <label for="address" class="form-label text-light-50">Address</label>
+                  <input type="text" class="form-control" id="address" placeholder="1234 Main St" style="background-color: rgb(9, 20, 35); border: 1px solid #ff6565; color: azure;" required>
+                </div>
+
+
+              </div>
+
+              <hr class="my-4" style="border-color: #ff6565;">
+
+              <h4 class="mb-3" style="color: aquamarine">Payment Options</h4>
+              <div class="my-3">
+                <div class="form-check">
+                  <input id="credit" name="paymentMethod" type="radio" class="form-check-input" checked required style="background-color: rgb(9, 20, 35); border: 1px solid #ff6565;">
+                  <label class="form-check-label" for="credit">Credit card</label>
+                </div>
+                <div class="form-check">
+                  <input id="paypal" name="paymentMethod" type="radio" class="form-check-input" required style="background-color: rgb(9, 20, 35); border: 1px solid #ff6565;">
+                  <label class="form-check-label" for="paypal">PayPal</label>
+                </div>
+              </div>
+
+              <hr class="my-4" style="border-color: #ff6565;">
+              <button class="w-100 btn btn-lg py-3 fw-bold" style="background-color: #ff6565; color: white; border-radius: 15px;" type="submit">Place Order</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-5">
+          <div class="p-4" style="background-color: rgb(11, 29, 55); border-radius: 20px; border: 2px solid #ff6565;">
+            <h4 class="d-flex justify-content-between align-items-center mb-4">
+              <span style="color: aquamarine">Order Summary</span>
+              <span class="badge rounded-pill" style="background-color: #ff6565;" id="cart-count">0</span>
+            </h4>
+            
+            <div id="cart-items-container">
+              <!-- Dynamic content here -->
+            </div>
+
+            <ul class="list-group mb-3" style="border-radius: 15px; border: 1px solid #ff6565;">
+              <li class="list-group-item d-flex justify-content-between lh-sm" style="background-color: rgb(9, 20, 35); color: azure; border-bottom: 1px solid #1a3040;">
+                <div>
+                  <h6 class="my-0">Subtotal</h6>
+                </div>
+                <span id="checkout-subtotal" class="text-muted">$0.00</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between lh-sm" style="background-color: rgb(9, 20, 35); color: azure; border-bottom: 1px solid #1a3040;">
+                <div>
+                  <h6 class="my-0">Shipping</h6>
+                  <small class="text-muted">Standard Delivery</small>
+                </div>
+                <span id="checkout-shipping" class="text-muted">$25.00</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between bg-dark" style="background-color: rgb(11, 29, 55) !important; color: azure; border-bottom: none;">
+                <span class="fw-bold" style="color: aqua">Total (USD)</span>
+                <strong id="checkout-total" style="color: rgb(45, 230, 169);">$0.00</strong>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import data from "./data.js";
+      
+      const loggedInUser = localStorage.getItem("loggedInUser");
+      
+      if (!loggedInUser) {
+          window.location.href = "index.html";
+      } else {
+          // Autofill name
+          if (loggedInUser.toLowerCase() !== 'guest') {
+              const parts = loggedInUser.split(' ');
+              document.getElementById('firstName').value = parts[0] || '';
+              document.getElementById('lastName').value = parts.slice(1).join(' ') || '';
+          }
+          
+          const laptops = JSON.parse(data);
+          
+          fetch(`server.php?action=getProfile&username=${encodeURIComponent(loggedInUser)}`)
+            .then(res => res.json())
+            .then(res => {
+                if(res.success) {
+                    const unpaidItems = res.bidding_summary.filter(item => item.status === 'Won');
+                    
+                    if (unpaidItems.length === 0) {
+                        document.querySelector('.row.g-5').innerHTML = `
+                          <div class="col-12 text-center py-5">
+                            <h3 class="text-white">There nth in ur cart</h3>
+                            <a href="liveBid.php" class="btn mt-3 px-4 py-2" style="background-color: #ff6565; color: white; border-radius: 10px;">Go to Bidding</a>
+                          </div>
+                        `;
+                        return;
+                    }
+                    
+                    document.getElementById('cart-count').textContent = unpaidItems.length;
+                    
+                    let subtotal = 0;
+                    let itemsHtml = '';
+                    
+                    unpaidItems.forEach(item => {
+                        const laptop = laptops.find(l => l.id === item.laptop_id);
+                        const amount = parseFloat(item.amount);
+                        subtotal += amount;
+                        
+                        if (laptop) {
+                            itemsHtml += `
+                            <div class="card mb-3" style="background-color: rgb(9, 20, 35); border: 1px solid #ff6565; border-radius: 15px; overflow: hidden;">
+                              <img src="${laptop.img}" class="card-img-top" alt="Laptop Image" style="height: 200px; object-fit: cover; padding: 10px; border-radius: 20px;">
+                              <div class="card-body">
+                                <h5 class="card-title text-white">${laptop.name}</h5>
+                                <p class="card-text text-muted small mb-2">${laptop.description.join(" | ")} | By ${laptop.sellerName}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                  <span class="text-light">Winning Bid</span>
+                                  <strong style="color: rgb(45, 230, 169); font-size: 1.2rem">$${amount.toLocaleString()}</strong>
+                                </div>
+                              </div>
+                            </div>`;
+                        }
+                    });
+                    
+                    document.getElementById('cart-items-container').innerHTML = itemsHtml;
+                    document.getElementById('checkout-subtotal').textContent = "$" + subtotal.toLocaleString();
+                    document.getElementById('checkout-total').textContent = "$" + (subtotal + 25).toLocaleString();
+                }
+            })
+            .catch(err => console.error("Could not fetch profile info", err));
+            
+          // Handle place order
+          const form = document.querySelector('form');
+          if (form) {
+              form.addEventListener('submit', (e) => {
+                  e.preventDefault();
+                  
+                  const formData = new FormData();
+                  formData.append('action', 'placeOrder');
+                  formData.append('username', loggedInUser);
+                  
+                  fetch('server.php', {
+                      method: 'POST',
+                      body: formData
+                  }).then(res => res.json())
+                    .then(res => {
+                        if (res.success) {
+                            alert("Order placed successfully!");
+                            window.location.href = "profile.html";
+                        } else {
+                            alert("Error placing order: " + res.message);
+                        }
+                    })
+                    .catch(err => console.error("Error:", err));
+              });
+          }
+      }
+    </script>
+  </body>
+</html>

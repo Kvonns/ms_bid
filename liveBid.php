@@ -1,7 +1,7 @@
 <?php
   include 'db.php';
 
-  const AUCTION_DURATION_SECONDS = 100;
+  const AUCTION_DURATION_SECONDS = 20;
 
   function sendJson($payload)
   {
@@ -30,9 +30,16 @@
         amount NUMERIC NOT NULL,
         round_started_at TIMESTAMPTZ NOT NULL,
         won_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        status TEXT DEFAULT 'Won',
         UNIQUE (laptop_id, round_started_at)
       )
     ");
+    
+    try {
+        $pdo->exec("ALTER TABLE auction_winners ADD COLUMN status TEXT DEFAULT 'Won'");
+    } catch (PDOException $e) {
+        // column likely exists
+    }
   }
 
   function getWinningBid($pdo, $laptop_id)
@@ -114,6 +121,26 @@
     $winner = null;
     if ($state['is_expired']) {
       $winner = getWinningBid($pdo, $laptop_id);
+
+      // Save the winner immediately so checkout cart is instantly populated
+      if ($winner && $state['round_started_at']) {
+        try {
+          ensureAuctionWinnersTable($pdo);
+          $saveWinner = $pdo->prepare("
+            INSERT INTO auction_winners (laptop_id, username, amount, round_started_at)
+            VALUES (:laptop_id, :username, :amount, :round_started_at)
+            ON CONFLICT (laptop_id, round_started_at) DO NOTHING
+          ");
+          $saveWinner->execute([
+            ':laptop_id'        => $laptop_id,
+            ':username'         => $winner['username'],
+            ':amount'           => $winner['amount'],
+            ':round_started_at' => $state['round_started_at']
+          ]);
+        } catch (PDOException $e) {
+          // Silently ignore — winner will be saved on reset anyway
+        }
+      }
     }
 
     return [
@@ -281,6 +308,7 @@
         <a href="liveBid.php">Live Bid</a>
         <a href="toBid.html">To Bid</a>
         <a href="profile.html">Profile</a>
+        <a href="checkout.html" style="position: relative;">Checkout<span id="checkoutBadge" style="display: none; width: 10px; height: 10px; background: #ff6565; border-radius: 50%; position: absolute; top: 0px; right: -5px;"></span></a>
       </div>
     </div>
     <div class="container-fluid px-0" id="container">
@@ -332,6 +360,7 @@
         <div class="modal-content winner-modal">
           <div class="modal-header">
             <h5 class="modal-title" id="winnerModalLabel">Auction winner</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body" id="winnerModalBody"></div>
         </div>

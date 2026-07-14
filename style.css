@@ -1,25 +1,32 @@
 * {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Segoe UI', sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+
 :root {
-        --bg: #080e12;
-        --bg2: #0d1a20;
-        --bg3: #111f28;
-        --green: #00e676;
-        --green-dim: #00c15a;
-        --green-dark: #003d1a;
-        --blue: #1a6fdf;
-        --blue-bright: #2d8fff;
-        --text: #e8f0f5;
-        --muted: #5a7a8a;
-        --border: #1a3040;
-        --card: #0d1c24;
-        --mono: "Space Mono", monospace;
-        --sans: "Syne", sans-serif;
-      }
+    --bg: #396786;
+    --bg2: #2f637b;
+    --bg3: #548fb4;
+    --green: #00e676;
+    --green-dim: #00c15a;
+    --green-dark: #003d1a;
+    --blue: #1a6fdf;
+    --blue-bright: #2d8fff;
+    --text: #e8f0f5;
+    --muted: #5a7a8a;
+    --border: #ff6565;
+    --card: rgb(11, 29, 55);
+    --mono: "Space Mono", monospace;
+    --sans: "Syne", sans-serif;
+}
+
+.gridCardtext {
+    color: #d0d7dd;
+    font-weight: 300;
+    font-size: 15px;
+}
 
 .card {
     background-color: transparent !important;
@@ -27,25 +34,29 @@
     box-shadow: none !important;
 }
 
-body,html{
+body,
+html {
     background-color: rgb(9, 20, 35);
     color: azure;
-    overflow-y: auto; /* or visible */
+    overflow-y: auto;
+    /* or visible */
     height: 100%;
     overflow-x: hidden;
 }
 
-.header{
-      position: sticky;
-  top: 0;
-  z-index: 1000;
+.header {
+    font-family: 'Courier New', Courier, monospace;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     display: flex;
     justify-content: space-between;
     padding: 15px;
     background-color: #0b1d37;
     border: #ff6565 1px solid;
 }
-.nav a{
+
+.nav a {
     display: flex;
     justify-content: space-between;
     text-align: center;
@@ -59,7 +70,8 @@ body,html{
     font-weight: 800;
 
 }
-.nav a:hover{
+
+.nav a:hover {
     color: #ff6565;
 }
 
@@ -68,10 +80,12 @@ body,html{
     font-weight: 900;
     font-size: 18px;
 }
+
 #startBid:hover {
-   transform: scale(1.05);
+    transform: scale(1.05);
 
 }
+
 .liveAution p {
     width: 15%;
     font-weight: 800;
@@ -84,31 +98,59 @@ body,html{
     text-overflow: ellipsis;
 }
 
-.visual, .detailed {
+.visual {
     width: 100%;
     height: auto;
-    background-color: rgb(11, 29, 55);
+    background-color: var(--card);
     border-radius: 20px;
     text-align: start;
     justify-content: center;
     align-items: center;
-    border: 2px solid #ff6565;
-
+    border: 3px solid #ff6565;
 }
 
 .detailed {
     margin-top: 15px;
-    display: flex;
-    justify-content: space-between;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-.detailed p{
-    font-family: monospace;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    background-color: var(--card);
+    border-radius: 12px;
+    border: 3px solid #ff6565;
+    overflow: hidden;
 }
 
 .detailedInfo {
-    padding: 15px;
-    font-weight: 600;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+    border-right: 1px solid var(--border);
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 8px;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.info-label {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.info-value {
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 700;
 }
 
 .visual img {
@@ -122,37 +164,51 @@ body,html{
 }
 
 .visual img:hover {
-    width: 90%;
+    transform: scale(0.96);
 }
 
 .currentBid {
-    border: #ff6565 2px solid;
-    padding: 15px;
-    background-color: #091423;
-}   
-
-.currentBid h3 {
-    color: aquamarine;
+    padding: 20px;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
 }
 
-.currentBid > div {
-    margin-bottom: 14px;
+.bid-stat-box {
+    background: rgba(255, 101, 101, 0.1);
+    border: 1px solid rgba(255, 101, 101, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
 }
 
-.currentBid > div:last-child {
-    margin-bottom: 0;
+.timer-box {
+    background: rgba(255, 101, 101, 0.2);
+    border: 1px solid rgba(255, 101, 101, 0.6);
 }
 
-.currentBid h2 {
+.stat-label {
+    color: #ff6565;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    color: white;
+    font-size: 1.4rem;
     font-weight: 700;
-    border-radius: 2px;
-    padding: 5px;
-    background-color: #ff6565;
+    font-family: var(--mono);
 }
 
-#auctionTimer h3 {
+.timer-val {
+    font-size: 1.8rem;
     color: #ff6565;
 }
+
 
 #idk {
     padding: 20px;
@@ -199,17 +255,19 @@ input[type=number] {
     gap: 10px;
 }
 
-#forBid button, .btninfo button {
+#forBid button,
+.btninfo button {
     background-color: rgb(45, 230, 169);
     border: rgb(0, 255, 170) 1px solid;
     font-weight: 800;
     height: 5vh;
-    width: 100%; 
+    width: 100%;
     padding: 2px;
     border-radius: 10px;
 }
 
-#forBid button:hover, .btninfo button:hover {
+#forBid button:hover,
+.btninfo button:hover {
     background-color: rgb(98, 255, 245);
 }
 
@@ -297,6 +355,7 @@ input[type=number] {
 }
 
 .featured-auction-grid .text-muted.small {
+
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -350,6 +409,7 @@ input[type=number] {
     transition: all 0.3s ease;
     margin-left: 15px;
 }
+
 .auth-action-btn:hover {
     background-color: rgba(0, 0, 0, 0.1);
     transform: translateY(-1px);
@@ -373,6 +433,7 @@ input[type=number] {
     padding-bottom: 10px;
     border-bottom: 2px solid transparent !important;
 }
+
 .structured-auth-tabs .nav-link.active {
     color: aqua !important;
     border-bottom: 2px solid aqua !important;
@@ -381,14 +442,16 @@ input[type=number] {
 
 .auth-input {
     background-color: rgb(9, 20, 35) !important;
-    border: 1px solid #00ffaa    !important;
+    border: 1px solid #00ffaa !important;
     border-radius: 10px !important;
     color: azure !important;
     padding: 10px 12px !important;
 }
+
 .auth-input::placeholder {
     color: rgba(240, 255, 250, 0.3);
 }
+
 .auth-input:focus {
     box-shadow: 0 0 8px rgba(0, 255, 170, 0.5) !important;
     border-color: #00ffaa !important;
@@ -404,8 +467,9 @@ input[type=number] {
     border-radius: 10px;
     transition: all 0.3s ease;
 }
+
 .auth-submit-btn:hover {
-    background-color: #00ffaa ;
+    background-color: #00ffaa;
     transform: translateY(-1px) scale(1.02);
     color: rgb(0, 0, 0);
     transition: all 0.3s ease;
@@ -645,7 +709,7 @@ img {
     gap: 20px;
 }
 
-#containerTo > .col-md-3 {
+#containerTo>.col-md-3 {
     flex: 0 0 calc(25% - 20px);
     max-width: calc(25% - 20px);
 }
@@ -659,7 +723,7 @@ img {
 }
 
 @media (max-width: 1199px) {
-    #containerTo > .col-md-3 {
+    #containerTo>.col-md-3 {
         flex-basis: calc(33.333% - 20px);
         max-width: calc(33.333% - 20px);
     }
@@ -687,7 +751,7 @@ img {
         margin-left: 0;
     }
 
-    #containerTo > .col-md-3 {
+    #containerTo>.col-md-3 {
         flex-basis: calc(50% - 20px);
         max-width: calc(50% - 20px);
     }
@@ -721,6 +785,7 @@ img {
 }
 
 @media (max-width: 767px) {
+
     .container.my-5,
     .container.text-center {
         padding-left: 18px;
@@ -745,7 +810,7 @@ img {
         width: 100%;
     }
 
-    .container.my-5 > .d-flex {
+    .container.my-5>.d-flex {
         align-items: flex-start !important;
         flex-direction: column;
     }
@@ -767,7 +832,7 @@ img {
         gap: 16px;
     }
 
-    #containerTo > .col-md-3 {
+    #containerTo>.col-md-3 {
         flex-basis: 100%;
         max-width: 100%;
     }

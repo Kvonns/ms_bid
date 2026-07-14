@@ -26,9 +26,16 @@ function ensureAuctionWinnersTable($pdo)
             amount NUMERIC NOT NULL,
             round_started_at TIMESTAMPTZ NOT NULL,
             won_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            status TEXT DEFAULT 'Won',
             UNIQUE (laptop_id, round_started_at)
         )
     ");
+    
+    try {
+        $pdo->exec("ALTER TABLE auction_winners ADD COLUMN status TEXT DEFAULT 'Won'");
+    } catch (PDOException $e) {
+        // column likely exists
+    }
 }
 
 function getProfileSummary($pdo, $username)
@@ -81,7 +88,7 @@ function getProfileSummary($pdo, $username)
     $wins = $winsQuery->fetch(PDO::FETCH_ASSOC);
 
     $victoriesQuery = $pdo->prepare("
-        SELECT laptop_id, amount, won_at
+        SELECT laptop_id, amount, won_at, COALESCE(status, 'Won') as status
         FROM auction_winners
         WHERE LOWER(username) = LOWER(:username)
         ORDER BY won_at DESC
@@ -105,7 +112,7 @@ function getProfileSummary($pdo, $username)
                 'laptop_id' => $victory['laptop_id'],
                 'amount' => (float) $victory['amount'],
                 'won_at' => $victory['won_at'],
-                'status' => 'Won'
+                'status' => $victory['status']
             ];
         }, $victories)
     ];
@@ -199,6 +206,73 @@ if (isset($_POST['action']) && $_POST['action'] == 'loginUser') {
         ]);
     } else {
         loginFailedResponse();
+    }
+}
+
+if (isset($_GET['action']) && $_GET['action'] == 'get_laptops') {
+    try {
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS laptops (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                description TEXT NOT NULL,
+                condition TEXT NOT NULL,
+                retailed_price NUMERIC NOT NULL DEFAULT 0,
+                min_increment NUMERIC NOT NULL DEFAULT 50,
+                seller_name TEXT NOT NULL,
+                img TEXT NOT NULL,
+                is_active BOOLEAN NOT NULL DEFAULT TRUE,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            )
+        ");
+        $laptops = $pdo->query("SELECT * FROM laptops WHERE is_active = TRUE ORDER BY created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
+        // Format to match the data.js structure
+        $formatted = array_map(function($l) {
+            return [
+                'id'            => $l['id'],
+                'name'          => $l['name'],
+                'description'   => explode(' | ', $l['description']),
+                'condition'     => $l['condition'],
+                'retailedPriced'=> (float) $l['retailed_price'],
+                'minIncrement'  => (float) $l['min_increment'],
+                'sellerName'    => $l['seller_name'],
+                'img'           => $l['img'],
+                'currentBid'    => 0,
+                'bidderCount'   => 0,
+            ];
+        }, $laptops);
+        sendJson(['success' => true, 'laptops' => $formatted]);
+    } catch (PDOException $error) {
+        sendJson(['success' => false, 'message' => $error->getMessage()]);
+    }
+}
+
+if (isset($_GET['action']) && $_GET['action'] == 'get_winner_info') {
+    $laptop_id = isset($_GET['laptop_id']) ? trim($_GET['laptop_id']) : '';
+    $username = isset($_GET['username']) ? trim($_GET['username']) : '';
+
+    $query = $pdo->prepare("SELECT amount, won_at FROM auction_winners WHERE laptop_id = :laptop_id AND LOWER(username) = LOWER(:username) ORDER BY won_at DESC LIMIT 1");
+    $query->execute([':laptop_id' => $laptop_id, ':username' => $username]);
+    $winner = $query->fetch(PDO::FETCH_ASSOC);
+
+    sendJson(['success' => true, 'winner' => $winner]);
+}
+
+if (isset($_POST['action']) && $_POST['action'] == 'placeOrder') {
+    $username = isset($_POST['username']) ? trim($_POST['username']) : '';
+    $laptop_id = isset($_POST['laptop_id']) ? trim($_POST['laptop_id']) : '';
+
+    try {
+        if ($laptop_id) {
+            $stmt = $pdo->prepare("UPDATE auction_winners SET status = 'Purchased' WHERE laptop_id = :laptop_id AND LOWER(username) = LOWER(:username)");
+            $stmt->execute([':laptop_id' => $laptop_id, ':username' => $username]);
+        } else {
+            $stmt = $pdo->prepare("UPDATE auction_winners SET status = 'Purchased' WHERE status = 'Won' AND LOWER(username) = LOWER(:username)");
+            $stmt->execute([':username' => $username]);
+        }
+        sendJson(['success' => true, 'message' => 'Order placed successfully']);
+    } catch (PDOException $e) {
+        sendJson(['success' => false, 'message' => $e->getMessage()]);
     }
 }
 
