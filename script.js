@@ -1,7 +1,24 @@
-import data from "./data.js";
-
 let storedLaptop = JSON.parse(localStorage.getItem("selectedLaptop"));
-let laptopData = storedLaptop || JSON.parse(data)[0];
+let laptopData = storedLaptop;
+
+if (!laptopData) {
+  try {
+    const res = await fetch('server.php?action=get_laptops');
+    const json = await res.json();
+    if (json.success && json.laptops && json.laptops.length > 0) {
+      laptopData = json.laptops[0];
+    }
+  } catch(e) { 
+    console.error(e); 
+  }
+}
+
+if (!laptopData) {
+  laptopData = {
+    id: "fallback", name: "No Laptops", description: ["Check back later"],
+    condition: "N/A", retailedPriced: 0, img: "", minIncrement: 10, sellerName: "Admin"
+  };
+}
 
 const AUCTION_DURATION_SECONDS = 20;
 const WINNER_POPUP_MS = 5000;
