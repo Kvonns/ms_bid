@@ -299,8 +299,7 @@ $isLoggedIn = isset($_SESSION['admin_logged_in']);
     <button class="nav-item-btn active" onclick="showSection('dashboard',this)"><i class="bi bi-speedometer2"></i> Dashboard</button>
     <button class="nav-item-btn" onclick="showSection('laptops',this)"><i class="bi bi-laptop"></i> Laptops</button>
     <button class="nav-item-btn" onclick="showSection('users',this)"><i class="bi bi-people"></i> Users</button>
-    <button class="nav-item-btn" onclick="showSection('bids',this)"><i class="bi bi-activity"></i> Live Bids</button>
-    <button class="nav-item-btn" onclick="showSection('orders',this)"><i class="bi bi-bag-check"></i> Orders</button>
+
   </nav>
   <div class="sidebar-footer">
     <a href="?logout=1" class="logout-btn"><i class="bi bi-box-arrow-left"></i> Logout</a>
@@ -319,12 +318,6 @@ $isLoggedIn = isset($_SESSION['admin_logged_in']);
     <div class="stat-grid">
       <div class="stat-card users"><div class="stat-num" id="stat-users">—</div><div class="stat-label">Total Users</div><i class="bi bi-people stat-icon"></i></div>
       <div class="stat-card laptops"><div class="stat-num" id="stat-laptops">—</div><div class="stat-label">Laptops Listed</div><i class="bi bi-laptop stat-icon"></i></div>
-      <div class="stat-card orders"><div class="stat-num" id="stat-orders">—</div><div class="stat-label">Auction Winners</div><i class="bi bi-trophy stat-icon"></i></div>
-      <div class="stat-card revenue"><div class="stat-num" id="stat-revenue">—</div><div class="stat-label">Total Revenue</div><i class="bi bi-currency-dollar stat-icon"></i></div>
-    </div>
-    <div class="panel">
-      <div class="panel-header"><h3>Recent Orders</h3></div>
-      <div class="panel-body"><table class="admin-table" id="dash-orders-table"><thead><tr><th>Laptop</th><th>Winner</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody id="dash-orders-body"><tr><td colspan="5"><div class="spinner"></div></td></tr></tbody></table></div>
     </div>
   </div>
 
@@ -349,26 +342,7 @@ $isLoggedIn = isset($_SESSION['admin_logged_in']);
     </div>
   </div>
 
-  <!-- ── Bids ── -->
-  <div id="sec-bids" class="section">
-    <div class="topbar">
-      <div><h2>Live Bids</h2><small>Monitor and manage active bids</small></div>
-      <button class="btn-del" onclick="clearAllBids()"><i class="bi bi-trash"></i> Clear All Bids</button>
-    </div>
-    <div class="panel">
-      <div class="panel-header"><h3>All Active Bids</h3><input class="search-input" id="bidSearch" placeholder="🔍 Search bids…" oninput="filterTable('bids-body',this.value)"/></div>
-      <div class="panel-body"><table class="admin-table"><thead><tr><th>Bidder</th><th>Laptop</th><th>Amount</th><th>Time</th><th>Actions</th></tr></thead><tbody id="bids-body"><tr><td colspan="5"><div class="spinner"></div></td></tr></tbody></table></div>
-    </div>
-  </div>
 
-  <!-- ── Orders ── -->
-  <div id="sec-orders" class="section">
-    <div class="topbar"><div><h2>Orders & Winners</h2><small>Manage auction outcomes and order statuses</small></div></div>
-    <div class="panel">
-      <div class="panel-header"><h3>All Orders</h3><input class="search-input" id="orderSearch" placeholder="🔍 Search orders…" oninput="filterTable('orders-body',this.value)"/></div>
-      <div class="panel-body"><table class="admin-table"><thead><tr><th>Laptop</th><th>Winner</th><th>Amount</th><th>Status</th><th>Won At</th><th>Actions</th></tr></thead><tbody id="orders-body"><tr><td colspan="6"><div class="spinner"></div></td></tr></tbody></table></div>
-    </div>
-  </div>
 
 </div><!-- /main -->
 
@@ -432,19 +406,7 @@ async function loadData() {
   // Stats
   document.getElementById('stat-users').textContent = allData.stats.users;
   document.getElementById('stat-laptops').textContent = allData.stats.laptops;
-  document.getElementById('stat-orders').textContent = allData.stats.orders;
-  document.getElementById('stat-revenue').textContent = fmt(allData.stats.revenue);
 
-  // Dashboard recent orders
-  const dashBody = document.getElementById('dash-orders-body');
-  dashBody.innerHTML = allData.orders.slice(0,8).map(o => `
-    <tr>
-      <td>${esc(o.laptop_name || o.laptop_id)}</td>
-      <td><strong>${esc(o.username)}</strong></td>
-      <td style="color:#00e5c0">${fmt(o.amount)}</td>
-      <td><span class="badge-status ${o.status==='Won'?'badge-won':'badge-purchased'}">${esc(o.status||'Won')}</span></td>
-      <td style="color:#4a6a7a">${fmtDate(o.won_at)}</td>
-    </tr>`).join('') || '<tr><td colspan="5" class="text-center" style="color:#4a6a7a;padding:24px">No orders yet</td></tr>';
 
   // Laptops
   document.getElementById('laptops-body').innerHTML = allData.laptops.map(l => `
@@ -472,33 +434,7 @@ async function loadData() {
       <td><button class="btn-del" onclick="deleteUser('${esc(u.username)}')">Delete</button></td>
     </tr>`).join('') || '<tr><td colspan="5" class="text-center" style="color:#4a6a7a;padding:24px">No users</td></tr>';
 
-  // Bids
-  document.getElementById('bids-body').innerHTML = allData.bids.map(b => `
-    <tr>
-      <td><strong>${esc(b.username)}</strong></td>
-      <td>${esc(b.laptop_name || b.laptop_id)}</td>
-      <td style="color:#00e5c0"><strong>$${Number(b.amount).toLocaleString()}</strong></td>
-      <td style="color:#4a6a7a">${fmtDate(b.created_at)}</td>
-      <td><button class="btn-del" onclick="clearBidsByLaptop('${esc(b.laptop_id)}')">Clear Laptop Bids</button></td>
-    </tr>`).join('') || '<tr><td colspan="5" class="text-center" style="color:#4a6a7a;padding:24px">No active bids</td></tr>';
 
-  // Orders
-  document.getElementById('orders-body').innerHTML = allData.orders.map(o => `
-    <tr>
-      <td>${esc(o.laptop_name || o.laptop_id)}</td>
-      <td><strong>${esc(o.username)}</strong></td>
-      <td style="color:#00e5c0">${fmt(o.amount)}</td>
-      <td><span class="badge-status ${o.status==='Won'?'badge-won':'badge-purchased'}">${esc(o.status||'Won')}</span></td>
-      <td style="color:#4a6a7a">${fmtDate(o.won_at)}</td>
-      <td>
-        <select class="form-select form-select-sm" style="width:140px;display:inline-block" onchange="updateOrderStatus(${o.id},this.value)">
-          <option value="Won" ${o.status==='Won'?'selected':''}>Won</option>
-          <option value="Purchased" ${o.status==='Purchased'?'selected':''}>Purchased</option>
-          <option value="Shipped" ${o.status==='Shipped'?'selected':''}>Shipped</option>
-          <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
-        </select>
-      </td>
-    </tr>`).join('') || '<tr><td colspan="6" class="text-center" style="color:#4a6a7a;padding:24px">No orders</td></tr>';
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -576,36 +512,7 @@ async function deleteUser(username) {
   if (data.success) loadData(); else alert('Error: ' + data.message);
 }
 
-// ── Bid Management ─────────────────────────────────────────────────────────────
-async function clearBidsByLaptop(laptopId) {
-  if (!confirm(`Clear all bids for laptop "${laptopId}"?`)) return;
-  const fd = new FormData();
-  fd.append('admin_action', 'clear_bids');
-  fd.append('laptop_id', laptopId);
-  const res = await fetch('admin.php', { method: 'POST', body: fd });
-  const data = await res.json();
-  if (data.success) loadData(); else alert('Error: ' + data.message);
-}
 
-async function clearAllBids() {
-  if (!confirm('Clear ALL bids from the entire platform? This cannot be undone!')) return;
-  const fd = new FormData();
-  fd.append('admin_action', 'clear_bids');
-  const res = await fetch('admin.php', { method: 'POST', body: fd });
-  const data = await res.json();
-  if (data.success) loadData(); else alert('Error: ' + data.message);
-}
-
-// ── Order Status ───────────────────────────────────────────────────────────────
-async function updateOrderStatus(id, status) {
-  const fd = new FormData();
-  fd.append('admin_action', 'update_order_status');
-  fd.append('id', id);
-  fd.append('status', status);
-  const res = await fetch('admin.php', { method: 'POST', body: fd });
-  const data = await res.json();
-  if (!data.success) alert('Error: ' + data.message);
-}
 
 // ── Init ───────────────────────────────────────────────────────────────────────
 <?php if ($isLoggedIn): ?>
