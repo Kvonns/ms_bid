@@ -58,74 +58,8 @@
       <span class="badge rounded-pill px-3 py-2" style="background-color: #ff6565; font-size: 14px">Live Now</span>
     </div>
 
-    <div class="row g-4 featured-auction-grid">
-      <div class="col-md-4">
-        <div class="biddingCard">
-          <img src="https://i.pinimg.com/736x/dd/6b/e4/dd6be478c7fcd08d5438c5f512577419.jpg" alt="MacBook Pro 14 M5" />
-          <div class="p-2">
-            <h4 class="mt-3 text-white h5">MacBook Pro 14 M5</h4>
-            <p class="gridCardtext">1000GB SSD | 24GB RAM | By MSBIDD</p>
-            <div class="d-flex justify-content-between align-items-center mt-3">
-              <div>
-                <span class="text-secondary small d-block">Current Bid</span>
-                <strong style="color: rgb(45, 230, 169); font-size: 1.2rem">$1,850</strong>
-              </div>
-              <div class="btninfo p-0">
-                <button onclick="location.href = 'toBid.html'" style="width: 100px">
-                  Bid Now
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="biddingCard">
-          <img src="https://i.pinimg.com/1200x/d3/3e/57/d33e570501f34c8924b9239bf9618d28.jpg"
-            alt="ASUS ROG Zephyrus G14" />
-          <div class="p-2">
-            <h4 class="mt-3 text-white h5">ASUS ROG Zephyrus G14</h4>
-            <p class="gridCardtext">
-              1TB SSD | 32GB RAM | RTX 4070 | By GameHub
-            </p>
-            <div class="d-flex justify-content-between align-items-center mt-3">
-              <div>
-                <span class="text-secondary small d-block">Current Bid</span>
-                <strong style="color: rgb(45, 230, 169); font-size: 1.2rem">$1,450</strong>
-              </div>
-              <div class="btninfo p-0">
-                <button onclick="location.href = 'toBid.html'" style="width: 100px">
-                  Bid Now
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="biddingCard">
-          <img src="https://i.pinimg.com/736x/19/59/5d/19595dede86ed3a1136a698fb39b4333.jpg" alt="Dell XPS 13 Plus" />
-          <div class="p-2">
-            <h4 class="mt-3 text-white h5">Dell XPS 13 Plus</h4>
-            <p class="gridCardtext">
-              512GB SSD | 16GB RAM | OLED Touch | By TechVault
-            </p>
-            <div class="d-flex justify-content-between align-items-center mt-3">
-              <div>
-                <span class="text-secondary small d-block">Current Bid</span>
-                <strong style="color: rgb(45, 230, 169); font-size: 1.2rem">$980</strong>
-              </div>
-              <div class="btninfo p-0">
-                <button onclick="location.href = 'toBid.html'" style="width: 100px">
-                  Bid Now
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="row g-4 featured-auction-grid" id="featuredGrid">
+      <!-- Dynamically populated from database -->
     </div>
   </div>
 
@@ -334,6 +268,61 @@
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         modalInstance.hide();
       });
+
+      // Load Featured Laptops
+      async function loadFeaturedLaptops() {
+        try {
+          const res = await fetch("server.php?action=get_laptops");
+          const json = await res.json();
+          if (json.success && json.laptops) {
+            const grid = document.getElementById("featuredGrid");
+            grid.innerHTML = "";
+            
+            const featuredLaptops = json.laptops.slice(0, 3);
+            window.featuredLaptopsData = featuredLaptops;
+
+            featuredLaptops.forEach((laptop, i) => {
+              const col = document.createElement("div");
+              col.className = "col-md-4";
+              
+              let shortDesc = laptop.description.slice(0, 2).join(' | ');
+              
+              col.innerHTML = `
+                <div class="biddingCard">
+                  <img src="${laptop.img}" alt="${laptop.name}" />
+                  <div class="p-2">
+                    <h4 class="mt-3 text-white h5">${laptop.name}</h4>
+                    <p class="gridCardtext">${shortDesc} | By ${laptop.sellerName}</p>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                      <div>
+                        <span class="text-secondary small d-block">Retail Price</span>
+                        <strong style="color: rgb(45, 230, 169); font-size: 1.2rem">$${laptop.retailedPriced.toLocaleString()}</strong>
+                      </div>
+                      <div class="btninfo p-0">
+                        <button onclick="goToLiveBid(${i})" style="width: 100px">
+                          Bid Now
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `;
+              grid.appendChild(col);
+            });
+          }
+        } catch (e) {
+          console.error("Error loading featured laptops:", e);
+        }
+      }
+
+      window.goToLiveBid = function(index) {
+        if (window.featuredLaptopsData && window.featuredLaptopsData[index]) {
+          localStorage.setItem("selectedLaptop", JSON.stringify(window.featuredLaptopsData[index]));
+          window.location.href = "liveBid.php";
+        }
+      };
+
+      loadFeaturedLaptops();
     });
   </script>
 </body>
